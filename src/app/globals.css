@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #3C81F6;
+  --font-sans: var(--font-outfit), var(--font-inter), sans-serif;
+}
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #f4f4f5;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.5);
+}
+
+/* Reset and style markdown content */
+.reset-tw p {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+.reset-tw h1, .reset-tw h2, .reset-tw h3 {
+  font-weight: 700;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  color: inherit;
+}
+.reset-tw h1 {
+  font-size: 1.25rem;
+}
+.reset-tw h2 {
+  font-size: 1.125rem;
+}
+.reset-tw h3 {
+  font-size: 1rem;
+}
+.reset-tw ul, .reset-tw ol {
+  padding-left: 1.5rem;
+  list-style-type: disc;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.reset-tw li {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+.reset-tw strong {
+  font-weight: 600;
+}

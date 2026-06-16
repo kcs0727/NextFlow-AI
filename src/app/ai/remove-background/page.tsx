@@ -1,0 +1,117 @@
+'use client';
+
+import React, { useState } from 'react';
+import { Eraser, Sparkles, Upload } from 'lucide-react';
+import { useAiStore } from '@/store/aiStore';
+
+export default function RemoveBg() {
+  const [input, setInput] = useState<File | null>(null);
+  const [publish, setPublish] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [content, setContent] = useState('');
+
+  const { removebg, buttonLoading } = useAiStore();
+
+  const onsubmitHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input) return;
+    await removebg(input, publish, setLoading, setContent);
+  };
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-6 h-full text-slate-700 dark:text-slate-350">
+      
+      {/* Configuration Form */}
+      <form 
+        onSubmit={onsubmitHandler} 
+        className="w-full lg:max-w-md p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"
+      >
+        <div>
+          <div className="flex items-center gap-3">
+            <Sparkles className="w-5 h-5 text-red-500" />
+            <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">Background Removal</h1>
+          </div>
+
+          <div className="mt-6">
+            <label className="text-sm font-semibold text-slate-650 dark:text-slate-400">Upload Image</label>
+            <div className="mt-2 flex items-center justify-center w-full">
+              <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-950 hover:bg-slate-100/50 dark:hover:bg-slate-900/50 transition">
+                <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                  <Upload className="w-8 h-8 text-slate-400 mb-2" />
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-450">
+                    {input ? input.name : 'Click to upload or drag & drop'}
+                  </p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+                    Supports PNG, JPG up to 10MB
+                  </p>
+                </div>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  required 
+                  onChange={(e) => setInput(e.target.files?.[0] || null)} 
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* Toggle Public Visibility */}
+          <div className="my-6 flex items-center gap-3 bg-slate-50 dark:bg-slate-950/40 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/60">
+            <label className="relative cursor-pointer inline-flex items-center">
+              <input 
+                type="checkbox" 
+                onChange={(e) => setPublish(e.target.checked)} 
+                checked={publish} 
+                className="sr-only peer" 
+              />
+              <div className="w-9 h-5 bg-slate-300 dark:bg-slate-800 rounded-full peer-checked:bg-red-500 transition-colors"></div>
+              <span className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-4"></span>
+            </label>
+            <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Make this image public on Community Feed</span>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white px-5 py-3 text-sm font-semibold rounded-xl cursor-pointer shadow-md shadow-red-500/10 hover:shadow-lg disabled:opacity-50 transition" 
+          disabled={buttonLoading}
+        >
+          {loading ? (
+            <span className="w-5 h-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+          ) : (
+            <Eraser className="w-4 h-4" />
+          )}
+          Remove Background
+        </button>
+      </form>
+
+      {/* Processed Image Display */}
+      <div className="flex-1 p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col min-h-[400px]">
+        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+          <Eraser className="w-5 h-5 text-red-500" />
+          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Processed Image</h2>
+        </div>
+
+        {!content ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-10 text-slate-400">
+            <Eraser className="w-10 h-10 mb-4 opacity-50 text-red-500" />
+            <p className="text-sm">Upload an image and click “Remove Background” to get started.</p>
+          </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center mt-6">
+            <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 max-w-md bg-slate-50 dark:bg-slate-950 shadow-inner">
+              <img 
+                src={content} 
+                alt="AI Processed Result" 
+                className="w-full h-auto object-contain max-h-[450px]"
+                loading="eager"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+    </div>
+  );
+}

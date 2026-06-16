@@ -1,0 +1,42 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/db';
+import { redis } from '@/lib/redis';
+import { checkAuth } from '@/lib/auth-check';
+
+export async function GET(req: NextRequest) {
+  try {
+    const authCheck = await checkAuth();
+    if (authCheck.errorResponse) return authCheck.errorResponse;
+    const { userId } = authCheck;
+    
+    const cacheKey = 'community_feed';
+    const cachedData = await redis.get(cacheKey);
+
+    if (cachedData) {
+      return NextResponse.json({
+        success: true,
+        creations: JSON.parse(cachedData),
+        isPremium: authCheck.isPremium,
+      });
+    }
+
+    // Fetch from Postgres
+    const creations = await prisma.creation.findMany({
+      where: { publish: true },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Cache in Redis for 10 minutes
+    await redis.set(cacheKey, JSON.stringify(creations), 'EX', 600);
+
+    return NextResponse.json({
+      success: true,
+      creations,
+      isPremium: authCheck.isPremium,
+    });
+  } 
+  catch (error: any) {
+    console.error('get-published-creations error:', error);
+    return NextResponse.json({ success: false, message: error.message || 'Server error.' }, { status: 500 });
+  }
+}
