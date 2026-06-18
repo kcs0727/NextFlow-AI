@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { Outfit, Inter } from 'next/font/google';
 import { ClerkProvider } from '@clerk/nextjs';
-import { Toaster } from 'react-hot-toast';
 import UserSync from '@/components/UserSync';
 import './globals.css';
+import { ThemeProvider } from '@/components/theme-provider';
+import { ToastProvider } from '@/components/toast-provider';
 
 const outfit = Outfit({
   variable: '--font-outfit',
@@ -31,10 +32,13 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${outfit.variable} ${inter.variable} h-full antialiased`} suppressHydrationWarning>
-        <body className="min-h-full bg-slate-50 text-slate-900 font-sans dark:bg-[#0c0c0e] dark:text-slate-100 transition-colors duration-300">
-          <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+        <body className="min-h-full bg-primary text-secondary font-sans  transition-colors duration-300">
           <UserSync />
-          {children}
+          <ThemeProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

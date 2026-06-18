@@ -33,25 +33,25 @@ export default function Community() {
   }
 
   return (
-    <div className="flex flex-col gap-6 h-full text-slate-700 dark:text-slate-205">
+    <div className="flex flex-col gap-6 h-full text-slate3">
       
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-sans text-slate-805 dark:text-slate-100 flex items-center gap-2">
-            <Compass className="w-6 h-6 text-blue-500" /> Community Creations
+          <h1 className="text-2xl font-bold font-sans text-slate1 flex items-center gap-2">
+            <Compass className="w-6 h-6 text-yellow-500" /> Community Creations
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-slate3 mt-1">
             Browse through beautiful graphics generated publicly by the EdgeAI community.
           </p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800/80 rounded-2xl p-6 min-h-[500px]">
+      <div className="rounded-2xl p-6 min-h-[500px]">
         {creations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center p-16 text-slate-400 h-full">
+          <div className="flex flex-col items-center justify-center text-center p-16 h-full">
             <ImageIcon className="w-12 h-12 mb-4 opacity-30 text-blue-500 animate-pulse" />
-            <h3 className="font-bold text-slate-800 dark:text-slate-200 mb-1">No public creations yet</h3>
-            <p className="text-xs text-slate-450 max-w-sm">
+            <h3 className="font-bold text-slate2 mb-1">No public creations yet</h3>
+            <p className="text-xs text-slate4 max-w-sm">
               Generate an image using the Text-to-Image tool and toggle the &quot;Make public&quot; options to showcase your work here!
             </p>
           </div>
@@ -62,7 +62,7 @@ export default function Community() {
               return (
                 <div 
                   key={creation.id} 
-                  className="break-inside-avoid relative group rounded-xl overflow-hidden border border-slate-200/60 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 shadow-sm hover:shadow-md transition-all duration-300"
+                  className="break-inside-avoid relative group rounded-xl overflow-hidden border border-slateb bg-slate95 shadow-sm hover:shadow-md transition-all duration-300"
                 >
                   <img 
                     src={creation.content} 

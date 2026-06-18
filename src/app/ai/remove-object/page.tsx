@@ -20,29 +20,29 @@ export default function RemoveObj() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 h-full text-slate-700 dark:text-slate-355">
+    <div className="flex flex-col lg:flex-row gap-6 h-full text-slate3">
       
       {/* Configuration Form */}
       <form 
         onSubmit={onsubmitHandler} 
-        className="w-full lg:max-w-md p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"
+        className="w-full lg:max-w-md p-6 bg-primary rounded-2xl border border-slateb shadow-sm flex flex-col justify-between"
       >
         <div>
           <div className="flex items-center gap-3">
             <Sparkles className="w-5 h-5 text-indigo-500" />
-            <h1 className="text-xl font-bold text-slate-800 dark:text-slate-100">Object Removal</h1>
+            <h1 className="text-xl font-bold text-slate1">Object Removal</h1>
           </div>
 
           <div className="mt-6">
-            <label className="text-sm font-semibold text-slate-650 dark:text-slate-400">Upload Image</label>
+            <label className="text-sm font-semibold text-slate3">Upload Image</label>
             <div className="mt-2 flex items-center justify-center w-full">
-              <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl cursor-pointer bg-slate-50 dark:bg-slate-950 hover:bg-slate-100/50 dark:hover:bg-slate-900/50 transition">
+              <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-slateb rounded-xl cursor-pointer bg-slate95 hover:bg-slate9 transition">
                 <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
-                  <Upload className="w-8 h-8 text-slate-400 mb-2" />
-                  <p className="text-xs font-semibold text-slate-505 dark:text-slate-455">
+                  <Upload className="w-8 h-8 text-slate3 mb-2" />
+                  <p className="text-xs font-semibold text-slate3">
                     {input ? input.name : 'Click to upload or drag & drop'}
                   </p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-550 mt-1">
+                  <p className="text-[10px] text-slate4 mt-1">
                     Supports PNG, JPG up to 10MB
                   </p>
                 </div>
@@ -58,10 +58,10 @@ export default function RemoveObj() {
           </div>
 
           <div className="mt-6">
-            <label className="text-sm font-semibold text-slate-650 dark:text-slate-400">Object to Remove</label>
+            <label className="text-sm font-semibold text-slate3">Object to Remove</label>
             <input 
               type="text" 
-              className="w-full p-3 mt-2 outline-none text-sm rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 focus:border-indigo-505 focus:ring-1 focus:ring-indigo-505 transition duration-200"
+              className="w-full p-3 mt-2 outline-none text-sm rounded-xl border border-slateb bg-slate95 text-slate3 focus:border-indigo-505 focus:ring-1 focus:ring-indigo-500 transition duration-200"
               placeholder="e.g., watch, spoon, trashcan (Enter single object name)" 
               required 
               onChange={(e) => setObject(e.target.value)} 
@@ -70,7 +70,7 @@ export default function RemoveObj() {
           </div>
 
           {/* Toggle Public Visibility */}
-          <div className="my-6 flex items-center gap-3 bg-slate-50 dark:bg-slate-950/40 p-3 rounded-xl border border-slate-200/50 dark:border-slate-800/60">
+          <div className="my-6 flex items-center gap-3 bg-slate95 p-3 rounded-xl border border-slateb">
             <label className="relative cursor-pointer inline-flex items-center">
               <input 
                 type="checkbox" 
@@ -78,16 +78,16 @@ export default function RemoveObj() {
                 checked={publish} 
                 className="sr-only peer" 
               />
-              <div className="w-9 h-5 bg-slate-300 dark:bg-slate-800 rounded-full peer-checked:bg-indigo-500 transition-colors"></div>
+              <div className="w-9 h-5 bg-slate8 rounded-full peer-checked:bg-indigo-500 transition-colors"></div>
               <span className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-4"></span>
             </label>
-            <span className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">Make this image public on Community Feed</span>
+            <span className="text-xs sm:text-sm text-slate4">Make this image public on Community Feed</span>
           </div>
         </div>
 
         <button 
           type="submit" 
-          className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-indigo-650 to-purple-550 hover:from-indigo-700 hover:to-purple-650 text-white px-5 py-3 text-sm font-semibold rounded-xl cursor-pointer shadow-md shadow-indigo-500/10 hover:shadow-lg disabled:opacity-50 transition" 
+          className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-900 hover:from-indigo-700 hover:to-purple-500 text-white px-5 py-3 text-sm font-semibold rounded-xl cursor-pointer shadow-md shadow-indigo-500/10 hover:shadow-lg disabled:opacity-50 transition" 
           disabled={buttonLoading}
         >
           {loading ? (
@@ -100,20 +100,20 @@ export default function RemoveObj() {
       </form>
 
       {/* Processed Image Display */}
-      <div className="flex-1 p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col min-h-[400px]">
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+      <div className="flex-1 p-6 bg-primary rounded-2xl border border-slateb shadow-sm flex flex-col min-h-[400px]">
+        <div className="flex items-center gap-3 pb-4 border-b border-slateb">
           <Scissors className="w-5 h-5 text-indigo-500" />
-          <h2 className="text-xl font-bold text-slate-800 dark:text-slate-100">Processed Image</h2>
+          <h2 className="text-xl font-bold text-slate1">Processed Image</h2>
         </div>
 
         {!content ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-10 text-slate-400">
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-10 text-slate4">
             <Scissors className="w-10 h-10 mb-4 opacity-50 text-indigo-500" />
             <p className="text-sm">Upload an image, describe the object, and click “Remove Object” to get started.</p>
           </div>
         ) : (
           <div className="flex-1 flex items-center justify-center mt-6">
-            <div className="rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 max-w-md bg-slate-50 dark:bg-slate-950 shadow-inner">
+            <div className="rounded-xl overflow-hidden border border-slateb max-w-md bg-slate95 shadow-inner">
               <img 
                 src={content} 
                 alt="AI Object Removal Result" 
@@ -128,3 +128,6 @@ export default function RemoveObj() {
     </div>
   );
 }
+
+
+

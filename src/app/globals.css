@@ -1,18 +1,77 @@
 @import "tailwindcss";
 
-@theme {
-  --color-primary: #3C81F6;
-  --font-sans: var(--font-outfit), var(--font-inter), sans-serif;
-}
-
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  color-scheme: light;
+
+  /* Core Colors */
+  --primary: white;
+  --secondary: black;
+
+  /* slate reverse variants */
+  --slate0: 2 6 23;
+  --slate1: 15 23 42;
+  --slate2: 30 41 59;
+  --slate3: 51 65 85;
+  --slate4: 71 85 105;
+  --slate5: 100 116 139;
+  --slate6: 148 163 184; 
+  --slate7: 203 213 225;
+  --slate8: 226 232 240;
+  --slate9: 241 245 249;
+  --slate95: 248 250 252;
+  --slateb: 203 213 225;
+  --primarybg: #f6f6f6;
 }
 
 .dark {
-  --background: #09090b;
-  --foreground: #f4f4f5;
+  color-scheme: dark;
+
+  /* Core Colors */
+  --primary: black;
+  --secondary: white;
+
+  /* slate variants */
+  --slate0: 248 250 252;
+  --slate1: 241 245 249;
+  --slate2: 226 232 240;
+  --slate3: 203 213 225;
+  --slate4: 148 163 184;
+  --slate5: 100 116 139;
+  --slate6: 71 85 105;
+  --slate7: 51 65 85;
+  --slate8: 30 41 59;
+  --slate9: 15 23 42;
+  --slate95: 2 6 23;
+  --slateb: 15 23 42;
+  --primarybg: #0c0c0e;
+}
+
+@theme inline {
+  /* Core */
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+
+  --color-slate0: rgb(var(--slate0));
+  --color-slate1: rgb(var(--slate1));
+  --color-slate2: rgb(var(--slate2));
+  --color-slate3: rgb(var(--slate3));
+  --color-slate4: rgb(var(--slate4));
+  --color-slate5: rgb(var(--slate5));
+  --color-slate7: rgb(var(--slate7));
+  --color-slate8: rgb(var(--slate8));
+  --color-slate9: rgb(var(--slate9));
+  --color-slate95: rgb(var(--slate95));
+  --color-slateb: rgb(var(--slateb));
+
+  
+  --color-primarybg: var(--primarybg);
+  --color-cardbg1: var(--cardbg1);
+  --color-cardhoverbg: var(--cardhoverbg);
+  --color-buttonbg: var(--buttonbg);
+  --color-buttonhoverbg: var(--buttonhoverbg);
+  --color-canvabg: var(--canvabg);
+  --color-nodebg: var(--nodebg);
+  --color-dialogbg: var(--dialogbg);
 }
 
 body {
