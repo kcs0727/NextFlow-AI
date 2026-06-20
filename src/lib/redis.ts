@@ -1,9 +1,9 @@
-import Redis from 'ioredis';
+import { Redis } from '@upstash/redis';
 
 class InMemoryRedis {
-  private cache = new Map<string, { value: string; expiry: number | null }>();
+  private cache = new Map<string, { value: any; expiry: number | null }>();
 
-  async get(key: string): Promise<string | null> {
+  async get(key: string): Promise<any> {
     const item = this.cache.get(key);
     if (!item) return null;
     if (item.expiry && item.expiry < Date.now()) {
@@ -13,10 +13,10 @@ class InMemoryRedis {
     return item.value;
   }
 
-  async set(key: string, value: string, mode?: string, duration?: number): Promise<'OK'> {
+  async set(key: string, value: any, options?: { ex?: number }): Promise<'OK'> {
     let expiry: number | null = null;
-    if (mode === 'EX' && duration) {
-      expiry = Date.now() + duration * 1000;
+    if (options?.ex) {
+      expiry = Date.now() + options.ex * 1000;
     }
     this.cache.set(key, { value, expiry });
     return 'OK';
@@ -37,7 +37,7 @@ class InMemoryRedis {
     const val = await this.get(key);
     const num = val ? parseInt(val, 10) : 0;
     const nextVal = num + 1;
-    await this.set(key, nextVal.toString());
+    await this.set(key, nextVal);
     return nextVal;
   }
 
@@ -51,30 +51,24 @@ class InMemoryRedis {
   }
 }
 
+
 const globalForRedis = global as unknown as { redis: Redis | InMemoryRedis };
 
-const redisUrl = process.env.REDIS_URL;
-
 const createRedisClient = (): Redis | InMemoryRedis => {
-  if (redisUrl) {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (url && token) {
     try {
-      const client = new Redis(redisUrl, {
-        maxRetriesPerRequest: 1,
-        lazyConnect: true,
-      });
-      // Connect lazily and handle errors
-      client.on('error', (err) => {
-        console.warn('Redis Connection Error:', err.message);
-      });
-      return client;
+      return new Redis({ url, token });
     } 
     catch (error: any) {
-      console.warn('Failed to initialize Redis with URL, falling back to In-Memory:', error?.message);
+      console.warn('Failed to initialize Upstash Redis Client, falling back to In-Memory:', error?.message);
       return new InMemoryRedis();
     }
   } 
   else {
-    console.warn('REDIS_URL not set. Using In-Memory cache fallback.');
+    console.warn('Upstash environment keys not configured. Falling back to In-Memory cache.');
     return new InMemoryRedis();
   }
 };

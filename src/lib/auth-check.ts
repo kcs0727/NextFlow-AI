@@ -28,12 +28,14 @@ export async function checkAuth(): Promise<AuthCheckResult> {
 
   const cacheKey = `user_cache:${userId}`;
   let dbUser;
+  let isCached = false;
 
   // 1. Try to load user from Redis cache
   try {
     const cachedUser = await redis.get(cacheKey);
     if (cachedUser) {
-      dbUser = JSON.parse(cachedUser);
+      dbUser = cachedUser;
+      isCached = true;
     }
   } catch (err) {
     console.warn('Redis read error in checkAuth:', err);
@@ -69,8 +71,7 @@ export async function checkAuth(): Promise<AuthCheckResult> {
     const imageUrl = clerkUser.imageUrl || '';
 
     dbUser = await createUser(userId, email, fullName, imageUrl);
-
-
+    console.log("dbUser created through apis")
   }
 
   // 4. If DB isPremium is out of sync with Clerk's current token, synchronize it
@@ -79,20 +80,24 @@ export async function checkAuth(): Promise<AuthCheckResult> {
       where: { clerkId: userId },
       data: { isPremium: isPremiumFromClerk },
     });
+    console.log("dbUser updated plan through apis")
     await redis.del(cacheKey);
+    isCached = false;
   }
 
 
-  // 5. Save to Redis cache for 24 hours
-  const userData = {
-    isPremium: dbUser.isPremium,
-    freeUsageCount: dbUser.freeUsageCount,
-  };
+  // 5. Save to Redis cache for 24 hours if not already cached
+  if (!isCached) {
+    const userData = {
+      isPremium: dbUser.isPremium,
+      freeUsageCount: dbUser.freeUsageCount,
+    };
 
-  try {
-    await redis.set(cacheKey, JSON.stringify(userData), 'EX', 86400);
-  } catch (err) {
-    console.warn('Redis write error in checkAuth:', err);
+    try {
+      await redis.set(cacheKey, userData, { ex: 86400 });
+    } catch (err) {
+      console.warn('Redis write error in checkAuth:', err);
+    }
   }
 
   return {

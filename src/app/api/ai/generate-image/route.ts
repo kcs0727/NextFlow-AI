@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
 
     // If published, invalidate community feed cache
     if (publish) {
-      await redis.del(['community_feed', 'trending_feed']);
+      await redis.del('community_feed', 'trending_feed');
     }
 
     return NextResponse.json({ success: true, content: secure_url, freeUsageCount, isPremium });

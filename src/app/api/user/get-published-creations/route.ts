@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     if (cachedData) {
       return NextResponse.json({
         success: true,
-        creations: JSON.parse(cachedData),
+        creations: cachedData,
         isPremium: authCheck.isPremium,
       });
     }
@@ -26,8 +26,8 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    // Cache in Redis for 10 minutes
-    await redis.set(cacheKey, JSON.stringify(creations), 'EX', 600);
+    // Cache in Redis for 60 minutes
+    await redis.set(cacheKey, creations, { ex: 3600 });
 
     return NextResponse.json({
       success: true,

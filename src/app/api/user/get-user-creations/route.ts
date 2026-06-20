@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     const cachedData = await redis.get(cacheKey);
 
     if (cachedData) {
-      const creations = JSON.parse(cachedData);
+      const creations = cachedData;
       return NextResponse.json({
         success: true,
         creations,
@@ -27,8 +27,8 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    // Cache creations list in Redis for 10 minutes (600 seconds)
-    await redis.set(cacheKey, JSON.stringify(creations), 'EX', 600);
+    // Cache creations list in Redis for 60 minutes 
+    await redis.set(cacheKey, creations, { ex: 3600 });
 
     return NextResponse.json({
       success: true,

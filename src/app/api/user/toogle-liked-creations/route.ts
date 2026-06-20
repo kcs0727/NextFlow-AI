@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Invalidate caches
-    await redis.del(['community_feed', 'trending_feed']);
+    await redis.del('community_feed', 'trending_feed');
 
     return NextResponse.json({
       success: true,

@@ -38,7 +38,8 @@ export async function POST(req: Request) {
       "svix-timestamp": svix_timestamp,
       "svix-signature": svix_signature,
     }) as WebhookEvent;
-  } catch (err) {
+  }
+  catch (err) {
     console.error('Error verifying Clerk webhook:', err);
     return new Response('Error verifying signature', { status: 400 });
   }
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
     const email = rawData.email_addresses?.[0]?.email_address || '';
     const fullName = `${rawData.first_name || ''} ${rawData.last_name || ''}`.trim() || 'User';
     const imageUrl = rawData.image_url || rawData.imageUrl || '';
-    
+
     // Check if the plan is marked as premium in public metadata
     const isPremium = rawData.public_metadata?.plan === 'premium' || rawData.public_metadata?.subscription === 'premium';
 
@@ -73,12 +74,6 @@ export async function POST(req: Request) {
       },
     });
 
-    // Invalidate Redis user cache
-    try {
-      await redis.del(`user_cache:${id}`);
-    } catch (err) {
-      console.warn('Redis delete error in webhook:', err);
-    }
   }
 
   if (eventType === 'user.deleted') {
@@ -88,14 +83,15 @@ export async function POST(req: Request) {
       await prisma.user.deleteMany({
         where: { clerkId: id },
       });
-
-      // Invalidate Redis user cache
-      try {
-        await redis.del(`user_cache:${id}`);
-      } catch (err) {
-        console.warn('Redis delete error in webhook:', err);
-      }
     }
+  }
+
+  // Invalidate Redis user cache
+  try {
+    await redis.del(`user_cache:${rawData.id}`);
+    console.log("webhook called")
+  } catch (err) {
+    console.warn('Redis delete error in webhook:', err);
   }
 
   return NextResponse.json({ success: true });
