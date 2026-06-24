@@ -1,16 +1,12 @@
 import { create } from 'zustand';
-import axios from 'axios';
+import axios from '@/lib/axios';
 import toast from 'react-hot-toast';
 import { Creation } from '@/types';
-
-// Relative path for API calls since we are full-stack Next.js
-axios.defaults.baseURL = '';
-axios.defaults.withCredentials = true;
 
 interface UserState {
   freeUsageCount: number;
   isPremium: boolean;
-  
+
   incrementUsage: () => void;
   getuser: () => Promise<void>;
   fetchcreations: (
@@ -48,7 +44,7 @@ export const useUserStore = create<UserState>((set, get) => ({
           freeUsageCount: data.freeUsageCount ?? 0,
         });
       }
-    } 
+    }
     catch (error: any) {
       console.error('getuser store error:', error);
     }
@@ -63,14 +59,14 @@ export const useUserStore = create<UserState>((set, get) => ({
         if (data.isPremium !== undefined) {
           set({ isPremium: data.isPremium });
         }
-      } 
+      }
       else {
         toast.error(data.message);
       }
-    } 
+    }
     catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
-    } 
+    }
     finally {
       setLoading(false);
     }
@@ -97,14 +93,14 @@ export const useUserStore = create<UserState>((set, get) => ({
 
       if (data.success) {
         toast.success(data.message);
-      } 
+      }
       else {
         toast.error(data.message);
         // Rollback / Refetch on error
         const refetchResult = await axios.get('/api/user/get-published-creations');
         if (refetchResult.data.success) setCreations(refetchResult.data.creations);
       }
-    } 
+    }
     catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
       const refetchResult = await axios.get('/api/user/get-published-creations');
@@ -121,14 +117,14 @@ export const useUserStore = create<UserState>((set, get) => ({
         if (data.isPremium !== undefined) {
           set({ isPremium: data.isPremium });
         }
-      } 
+      }
       else {
         toast.error(data.message);
       }
-    } 
+    }
     catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
-    } 
+    }
     finally {
       setLoading(false);
     }

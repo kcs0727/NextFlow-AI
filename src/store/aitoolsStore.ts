@@ -1,12 +1,8 @@
 import { create } from 'zustand';
-import axios from 'axios';
+import axios from '@/lib/axios';
 import toast from 'react-hot-toast';
 import { SelectedLength } from '@/types';
 import { useUserStore } from './userStore';
-
-// Relative path for API calls since we are full-stack Next.js
-axios.defaults.baseURL = '';
-axios.defaults.withCredentials = true;
 
 interface AiState {
   buttonLoading: boolean;
@@ -76,14 +72,14 @@ export const useAiStore = create<AiState>((set, get) => ({
           freeUsageCount: data.freeUsageCount,
           isPremium: data.isPremium ?? false,
         });
-      } 
+      }
       else {
         toast.error(data.message);
       }
-    } 
+    }
     catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
-    } 
+    }
     finally {
       setLoading(false);
       set({ buttonLoading: false });
@@ -105,14 +101,14 @@ export const useAiStore = create<AiState>((set, get) => ({
           freeUsageCount: data.freeUsageCount,
           isPremium: data.isPremium ?? false,
         });
-      } 
+      }
       else {
         toast.error(data.message);
       }
-    } 
+    }
     catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
-    } 
+    }
     finally {
       setLoading(false);
       set({ buttonLoading: false });
@@ -134,14 +130,14 @@ export const useAiStore = create<AiState>((set, get) => ({
           freeUsageCount: data.freeUsageCount,
           isPremium: data.isPremium ?? false,
         });
-      } 
+      }
       else {
         toast.error(data.message);
       }
-    } 
+    }
     catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
-    } 
+    }
     finally {
       setLoading(false);
       set({ buttonLoading: false });
@@ -165,14 +161,14 @@ export const useAiStore = create<AiState>((set, get) => ({
           freeUsageCount: data.freeUsageCount,
           isPremium: data.isPremium ?? false,
         });
-      } 
+      }
       else {
         toast.error(data.message);
       }
-    } 
+    }
     catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
-    } 
+    }
     finally {
       setLoading(false);
       set({ buttonLoading: false });
@@ -204,14 +200,14 @@ export const useAiStore = create<AiState>((set, get) => ({
           freeUsageCount: data.freeUsageCount,
           isPremium: data.isPremium ?? false,
         });
-      } 
+      }
       else {
         toast.error(data.message);
       }
-    } 
+    }
     catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
-    } 
+    }
     finally {
       setLoading(false);
       set({ buttonLoading: false });
@@ -234,14 +230,14 @@ export const useAiStore = create<AiState>((set, get) => ({
           freeUsageCount: data.freeUsageCount,
           isPremium: data.isPremium ?? false,
         });
-      } 
+      }
       else {
         toast.error(data.message);
       }
-    } 
+    }
     catch (error: any) {
       toast.error(error.response?.data?.message || error.message);
-    } 
+    }
     finally {
       setLoading(false);
       set({ buttonLoading: false });
