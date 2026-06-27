@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkAuth, checkLimit } from '@/lib/auth-check';
-import { incrementFreeUsage } from '@/lib/rate-limit';
-import { geminiAI } from '@/lib/ai-clients';
-import { prisma } from '@/lib/db';
-import { redis } from '@/lib/redis';
+import { checkAuth, checkLimit } from '@/lib/server/auth-check';
+import { incrementFreeUsage } from '@/lib/server/rate-limit';
+import { geminiAI } from '@/lib/server/ai-clients';
+import { prisma } from '@/lib/server/db';
+import { redis } from '@/lib/server/redis';
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     if (!process.env.GEMINI_API_KEY) {
       console.warn('GEMINI_API_KEY is missing! Using dummy content for preview.');
       content = `## Article: ${prompt}\n\nThis is a preview mode placeholder content because the Gemini API Key is not configured yet. Set up the \`GEMINI_API_KEY\` variable to activate full functionality.\n\n### Benefits of AI Content\n1. Speed of creation\n2. Scale-up potential\n3. Idea brainstorming assistance`;
-    } 
+    }
     else {
       const response = await geminiAI.chat.completions.create({
         model: 'gemini-3-flash-preview',
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     await redis.del(`dashboard:${userId}`);
 
     return NextResponse.json({ success: true, content, freeUsageCount, isPremium });
-  } 
+  }
   catch (error: any) {
     console.error('generate-article handler error:', error);
     return NextResponse.json({ success: false, message: error.message || 'Server error.' }, { status: 500 });

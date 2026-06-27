@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { createUser, prisma } from './db';
-import { checkRateLimit } from './rate-limit';
-import { redis } from './redis';
+import { createUser, prisma } from '@/lib/server/db';
+import { checkRateLimit } from '@/lib/server/rate-limit';
+import { redis } from '@/lib/server/redis';
 
 export interface AuthCheckResult {
   userId: string;

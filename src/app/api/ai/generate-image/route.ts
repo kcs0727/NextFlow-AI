@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
-import { checkAuth, checkLimit } from '@/lib/auth-check';
-import { incrementFreeUsage } from '@/lib/rate-limit';
-import { uploadToCloudinary } from '@/lib/cloudinary';
-import { prisma } from '@/lib/db';
-import { redis } from '@/lib/redis';
+import { checkAuth, checkLimit } from '@/lib/server/auth-check';
+import { incrementFreeUsage } from '@/lib/server/rate-limit';
+import { uploadToCloudinary } from '@/lib/server/cloudinary';
+import { prisma } from '@/lib/server/db';
+import { redis } from '@/lib/server/redis';
 
 export async function POST(req: NextRequest) {
   try {
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       console.warn('CLIPDROP_API_KEY is missing! Using dummy image upload.');
       // Fallback dummy image
       secure_url = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80';
-    } 
+    }
     else {
       const formData = new FormData();
       formData.append('prompt', prompt);
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, content: secure_url, freeUsageCount, isPremium });
-  } 
+  }
   catch (error: any) {
     console.error('generate-image handler error:', error);
     return NextResponse.json({ success: false, message: error.message || 'Server error.' }, { status: 500 });

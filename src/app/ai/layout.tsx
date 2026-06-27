@@ -18,7 +18,8 @@ import {
   X,
   Sun,
   Moon,
-  Gem
+  Gem,
+  Workflow
 } from 'lucide-react';
 import useUserStore from '@/store/userStore';
 import { useTheme } from "next-themes";
@@ -32,6 +33,7 @@ const navItems = [
   { to: '/ai/remove-object', label: 'Remove Object', icon: Scissors, color: 'text-indigo-500' },
   { to: '/ai/review-resume', label: 'Review Resume', icon: FileText, color: 'text-teal-500' },
   { to: '/ai/community', label: 'Community', icon: Users, color: 'text-yellow-500' },
+  { to: '/nodeeditor', label: 'Node Editor', icon: Workflow, color: 'text-cyan-500' },
 ];
 
 export default function DashboardLayout({

@@ -21,6 +21,15 @@
   --slate95: 248 250 252;
   --slateb: 203 213 225;
   --primarybg: #f6f6f6;
+
+  /* Component-level tokens (NextFlow merge) */
+  --cardbg1: #f1f1f1;
+  --cardhoverbg: #f0f0f0;
+  --buttonbg: #e8e8e840;
+  --buttonhoverbg: #e0e0e0;
+  --canvabg: #f5f5f540;
+  --nodebg: #fafafa;
+  --dialogbg: #fcfcfc;
 }
 
 .dark {
@@ -43,7 +52,16 @@
   --slate9: 15 23 42;
   --slate95: 2 6 23;
   --slateb: 15 23 42;
-  --primarybg: #0c0c0e;
+  --primarybg: #18181c;
+
+  /* Component-level tokens (NextFlow merge) */
+  --cardbg1: #1b1b1b;
+  --cardhoverbg: #1e1e1e;
+  --buttonbg: #625c5c40;
+  --buttonhoverbg: #1a1c23;
+  --canvabg: #46464640;
+  --nodebg: #1f1f1f;
+  --dialogbg: #11131a;
 }
 
 @theme inline {
@@ -132,4 +150,87 @@ body {
 }
 .reset-tw strong {
   font-weight: 600;
+}
+
+/* ───────── ReactFlow / NodeEditor Styles ───────── */
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.react-flow__edge-path {
+  stroke: #b5bdd2;
+  stroke-opacity: 0.72;
+  stroke-width: 1.2;
+}
+
+.react-flow__handle {
+  width: 10px;
+  height: 10px;
+}
+
+.react-flow__pane {
+  cursor: grab;
+}
+
+.react-flow__pane:active {
+  cursor: grabbing;
+}
+
+.cursor-crosshair {
+  cursor: crosshair;
+}
+
+.react-flow__background {
+  opacity: 0.92;
+}
+
+.react-flow__attribution {
+  display: none;
+}
+
+.krea-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #2e3342 transparent;
+}
+
+.krea-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.krea-scroll::-webkit-scrollbar-thumb {
+  background: #2e3342;
+  border-radius: 8px;
+}
+
+.krea-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes node-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(78, 126, 255, 0.4), 0 16px 36px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(78, 126, 255, 0), 0 16px 36px rgba(0, 0, 0, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(78, 126, 255, 0), 0 16px 36px rgba(0, 0, 0, 0.5);
+  }
 }

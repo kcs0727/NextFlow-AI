@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PDFParse } from 'pdf-parse';
 import path from 'path';
 import { pathToFileURL } from 'url';
-import { checkAuth, checkLimit } from '@/lib/auth-check';
-import { incrementFreeUsage } from '@/lib/rate-limit';
-import { geminiAI } from '@/lib/ai-clients';
-import { prisma } from '@/lib/db';
-import { redis } from '@/lib/redis';
+import { checkAuth, checkLimit } from '@/lib/server/auth-check';
+import { incrementFreeUsage } from '@/lib/server/rate-limit';
+import { geminiAI } from '@/lib/server/ai-clients';
+import { prisma } from '@/lib/server/db';
+import { redis } from '@/lib/server/redis';
 
 export async function POST(req: NextRequest) {
   try {
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     if (!process.env.GEMINI_API_KEY) {
       console.warn('GEMINI_API_KEY is missing! Using dummy content for preview.');
       content = `### Resume Review (Mock Analysis)\n\n**Strengths:**\n- Good formatting\n- Clear contact details\n\n**Weaknesses:**\n- Lacks quantitative achievements\n- Objective statement could be stronger\n\n*Configure \`GEMINI_API_KEY\` to get full AI analysis.*`;
-    } 
+    }
     else {
       const workerPath = pathToFileURL(
         path.join(process.cwd(), 'node_modules', 'pdfjs-dist', 'legacy', 'build', 'pdf.worker.mjs')
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       const pdfData = await parser.getText();
       const text = pdfData.text || '';
       await parser.destroy();
-      
+
       const prompt = `Review the following resume and provide constructive feedback on its strengths, weaknesses, and areas for improvement. Resume Content:\n\n${text}`;
 
       const response = await geminiAI.chat.completions.create({
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
     await redis.del(`dashboard:${userId}`);
 
     return NextResponse.json({ success: true, content, freeUsageCount, isPremium });
-  } 
+  }
   catch (error: any) {
     console.error('review-resume handler error:', error);
     return NextResponse.json({ success: false, message: error.message || 'Server error.' }, { status: 500 });

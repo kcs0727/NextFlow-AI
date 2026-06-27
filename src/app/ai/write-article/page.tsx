@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Edit, Sparkles, AlertCircle } from 'lucide-react';
-import { useAiStore } from '@/store/aiStore';
+import { useAiStore } from '@/store/aitoolsStore';
 import { SelectedLength } from '@/types';
 import { useTheme } from 'next-themes';
 
@@ -31,10 +31,10 @@ export default function WriteArticle() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 h-full text-slate3">
-      
+
       {/* Configuration Form */}
-      <form 
-        onSubmit={onsubmitHandler} 
+      <form
+        onSubmit={onsubmitHandler}
         className="w-full lg:max-w-md p-6 bg-primary rounded-2xl border border-slateb  shadow-sm flex flex-col justify-between"
       >
         <div>
@@ -45,13 +45,13 @@ export default function WriteArticle() {
 
           <div className="mt-6">
             <label className="text-sm font-semibold text-slate3">Article Topic</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               className="w-full p-3 mt-2 outline-none text-sm rounded-xl border border-slateb bg-slate95 text-slate3 focus:border-blue-950 focus:ring-1 focus:ring-blue-500 transition duration-200"
-              placeholder="e.g., Deep learning in healthcare, Travel tips for Japan..." 
-              required 
-              onChange={(e) => setInput(e.target.value)} 
-              value={input} 
+              placeholder="e.g., Deep learning in healthcare, Travel tips for Japan..."
+              required
+              onChange={(e) => setInput(e.target.value)}
+              value={input}
             />
           </div>
 
@@ -59,12 +59,12 @@ export default function WriteArticle() {
             <label className="text-sm font-semibold text-slate3">Article Length</label>
             <div className="mt-3 flex gap-3 flex-wrap">
               {articleLengthOptions.map((item) => (
-                <span 
-                  key={item.text} 
+                <span
+                  key={item.text}
                   className={`text-xs px-4 py-2 border rounded-full cursor-pointer transition font-medium
-                    ${selectedLen.text === item.text 
-                      ? `${currentTheme==='dark'?'bg-blue-950/35 border-blue-900/50':'bg-blue-50 border-blue-300'} text-blue-500 font-bold`
-                      : 'text-slate4 border-slateb hover:bg-slate9'}`} 
+                    ${selectedLen.text === item.text
+                      ? `${currentTheme === 'dark' ? 'bg-blue-950/35 border-blue-900/50' : 'bg-blue-50 border-blue-300'} text-blue-500 font-bold`
+                      : 'text-slate4 border-slateb hover:bg-slate9'}`}
                   onClick={() => setSelectedLen(item)}
                 >
                   {item.text}
@@ -74,9 +74,9 @@ export default function WriteArticle() {
           </div>
         </div>
 
-        <button 
-          type="submit" 
-          className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-900 hover:from-blue-700 hover:to-blue-500 text-white px-5 py-3 mt-8 text-sm font-semibold rounded-xl cursor-pointer shadow-md shadow-blue-500/10 hover:shadow-lg disabled:opacity-50 transition" 
+        <button
+          type="submit"
+          className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-900 hover:from-blue-700 hover:to-blue-500 text-white px-5 py-3 mt-8 text-sm font-semibold rounded-xl cursor-pointer shadow-md shadow-blue-500/10 hover:shadow-lg disabled:opacity-50 transition"
           disabled={buttonLoading}
         >
           {loading ? (

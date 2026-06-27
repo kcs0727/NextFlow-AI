@@ -1,5 +1,5 @@
-import { redis } from './redis';
-import { prisma } from './server/db';
+import { redis } from '@/lib/server/redis';
+import { prisma } from '@/lib/server/db';
 
 interface RateLimitResult {
   allowed: boolean;

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import axios from '@/lib/axios';
 import toast from 'react-hot-toast';
 import { Creation } from '@/types';
+import { WorkflowCard } from '@/types/workflow';
 
 interface UserState {
   freeUsageCount: number;
@@ -24,6 +25,9 @@ interface UserState {
     setCreations: React.Dispatch<React.SetStateAction<Creation[]>>,
     setLoading: (l: boolean) => void
   ) => Promise<void>;
+  fetchWorkflows: () => Promise<WorkflowCard[]>;
+  renameWorkflow: (id: string, name: string) => Promise<string | null>;
+  deleteWorkflow: (id: string) => Promise<boolean>;
 }
 
 
@@ -127,6 +131,58 @@ export const useUserStore = create<UserState>((set, get) => ({
     }
     finally {
       setLoading(false);
+    }
+  },
+
+  fetchWorkflows: async () => {
+    try {
+      const { data } = await axios.get('/api/workflows/save');
+      const formatted = (data.workflows ?? []).map((wf: any) => ({
+        id: wf.id,
+        name: wf.name,
+        createdAt: wf.createdAt,
+        updatedAt: wf.updatedAt,
+        runCount: wf._count?.runs ?? 0,
+      }));
+      return formatted;
+    } 
+    catch (error: any) {
+      console.error('fetchWorkflows store error:', error);
+      toast.error(error.response?.data?.error ?? error.message ?? "Failed to fetch workflows");
+      return [];
+    }
+  },
+
+  renameWorkflow: async (id: string, name: string) => {
+    try {
+      const { data } = await axios.patch(`/api/workflows/save/${id}`, { name });
+      const updatedWorkflow = data.workflow;
+      if (updatedWorkflow) {
+        toast.success("Workflow renamed successfully");
+        return updatedWorkflow.name;
+      }
+      return null;
+    } 
+    catch (error: any) {
+      console.error('renameWorkflow store error:', error);
+      toast.error(error.response?.data?.error ?? error.message ?? "Failed to rename workflow");
+      return null;
+    }
+  },
+
+  deleteWorkflow: async (id: string) => {
+    try {
+      const { data } = await axios.delete(`/api/workflows/save/${id}`);
+      if (data.ok) {
+        toast.success("Workflow deleted successfully");
+        return true;
+      }
+      return false;
+    } 
+    catch (error: any) {
+      console.error('deleteWorkflow store error:', error);
+      toast.error(error.response?.data?.error ?? error.message ?? "Failed to delete workflow");
+      return false;
     }
   },
 }));

@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { FileText, Sparkles, Upload } from 'lucide-react';
-import { useAiStore } from '@/store/aiStore';
+import { useAiStore } from '@/store/aitoolsStore';
 
 export default function ReviewResume() {
   const [input, setInput] = useState<File | null>(null);
@@ -20,10 +20,10 @@ export default function ReviewResume() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 h-full text-slate3">
-      
+
       {/* Configuration Form */}
-      <form 
-        onSubmit={onsubmitHandler} 
+      <form
+        onSubmit={onsubmitHandler}
         className="w-full lg:max-w-md p-6 bg-primary rounded-2xl border border-slateb shadow-sm flex flex-col justify-between"
       >
         <div>
@@ -45,21 +45,21 @@ export default function ReviewResume() {
                     Supports PDF format only
                   </p>
                 </div>
-                <input 
-                  type="file" 
-                  accept="application/pdf" 
-                  className="hidden" 
-                  required 
-                  onChange={(e) => setInput(e.target.files?.[0] || null)} 
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  className="hidden"
+                  required
+                  onChange={(e) => setInput(e.target.files?.[0] || null)}
                 />
               </label>
             </div>
           </div>
         </div>
 
-        <button 
-          type="submit" 
-          className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-900 hover:from-teal-700 hover:to-emerald-600 text-white px-5 py-3 mt-8 text-sm font-semibold rounded-xl cursor-pointer shadow-md shadow-teal-500/10 hover:shadow-lg disabled:opacity-50 transition" 
+        <button
+          type="submit"
+          className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-teal-600 to-emerald-900 hover:from-teal-700 hover:to-emerald-600 text-white px-5 py-3 mt-8 text-sm font-semibold rounded-xl cursor-pointer shadow-md shadow-teal-500/10 hover:shadow-lg disabled:opacity-50 transition"
           disabled={buttonLoading}
         >
           {loading ? (

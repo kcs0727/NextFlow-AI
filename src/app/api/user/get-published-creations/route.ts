@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
-import { redis } from '@/lib/redis';
-import { checkAuth } from '@/lib/auth-check';
+import { prisma } from '@/lib/server/db';
+import { redis } from '@/lib/server/redis';
+import { checkAuth } from '@/lib/server/auth-check';
 
 export async function GET(req: NextRequest) {
   try {
     const authCheck = await checkAuth();
     if (authCheck.errorResponse) return authCheck.errorResponse;
     const { userId } = authCheck;
-    
+
     const cacheKey = 'community_feed';
     const cachedData = await redis.get(cacheKey);
 
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
       creations,
       isPremium: authCheck.isPremium,
     });
-  } 
+  }
   catch (error: any) {
     console.error('get-published-creations error:', error);
     return NextResponse.json({ success: false, message: error.message || 'Server error.' }, { status: 500 });

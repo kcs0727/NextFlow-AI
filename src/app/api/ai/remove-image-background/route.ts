@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkAuth, checkLimit } from '@/lib/auth-check';
-import { incrementFreeUsage } from '@/lib/rate-limit';
-import { uploadToCloudinary } from '@/lib/cloudinary';
-import { prisma } from '@/lib/db';
-import { redis } from '@/lib/redis';
+import { checkAuth, checkLimit } from '@/lib/server/auth-check';
+import { incrementFreeUsage } from '@/lib/server/rate-limit';
+import { uploadToCloudinary } from '@/lib/server/cloudinary';
+import { prisma } from '@/lib/server/db';
+import { redis } from '@/lib/server/redis';
 
 export async function POST(req: NextRequest) {
   try {

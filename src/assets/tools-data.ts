@@ -8,7 +8,7 @@ import arrow_icon from './arrow_icon.svg';
 import ai_gen_img_1 from './ai_gen_img_1.png';
 import ai_gen_img_2 from './ai_gen_img_2.png';
 import ai_gen_img_3 from './ai_gen_img_3.png';
-import { SquarePen, Hash, Image, Eraser, Scissors, FileText, LucideIcon } from 'lucide-react';
+import { SquarePen, Hash, Image, Eraser, Scissors, FileText, Workflow, LucideIcon } from 'lucide-react';
 
 export const assets = {
   logo,
@@ -81,6 +81,13 @@ export const AiToolsData: AiTool[] = [
     Icon: FileText,
     bg: { from: '#12B7AC', to: '#08B6CE' },
     path: '/ai/review-resume',
+  },
+  {
+    title: 'Node Editor',
+    description: 'Build visual AI workflows by chaining nodes — LLMs, image processing, video tools — into automated pipelines.',
+    Icon: Workflow,
+    bg: { from: '#0891B2', to: '#6366F1' },
+    path: '/nodeeditor',
   },
 ];
 

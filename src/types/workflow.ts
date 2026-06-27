@@ -53,3 +53,12 @@ export type WorkflowRunHistory = {
   selectedCount?: number;
   nodeRuns: NodeRunHistory[];
 };
+
+export type WorkflowCard = {
+  id: string;
+  name: string;
+  updatedAt: string;
+  createdAt: string;
+  runCount?: number;
+};
+

@@ -22,11 +22,13 @@ import {
 } from 'lucide-react';
 import { AiToolsData, dummyTestimonialData, faqData, assets } from '@/assets/tools-data';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 
 
 export default function Home() {
   const { user } = useUser();
   const { openSignIn } = useClerk();
+  const router = useRouter();
   const { theme: nextTheme, setTheme, resolvedTheme } = useTheme();
   const currentTheme = resolvedTheme ?? nextTheme ?? "dark";
 
@@ -36,7 +38,7 @@ export default function Home() {
     <div className="min-h-screen relative overflow-hidden bg-primarybg text-slate2 transition-colors duration-300">
 
       {/* Header / Navbar */}
-      <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-primary border-b border-slateb transition-colors duration-300">
+      <header className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-primary/30 border-b border-slateb transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
 
           <Link href="/" className="flex items-center gap-2">
@@ -112,7 +114,7 @@ export default function Home() {
 
           <div className="flex flex-wrap justify-center gap-5 text-sm font-semibold mb-12">
             <button
-              onClick={() => (user ? window.location.href = '/ai' : openSignIn())}
+              onClick={() => (user ? router.push('/ai') : openSignIn())}
               className="px-8 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-indigo-500/30 hover:scale-[1.03] active:scale-[0.98] transition cursor-pointer"
             >
               Start Creating Now
@@ -148,7 +150,7 @@ export default function Home() {
               <motion.div
                 key={idx}
                 className="p-8 rounded-2xl bg-slate95 border border-slateb shadow-sm hover:shadow-md cursor-pointer group relative overflow-hidden transition-all duration-300 hover:-translate-y-1"
-                onClick={() => (user ? window.location.href = tool.path : openSignIn())}
+                onClick={() => (user ? router.push(tool.path) : openSignIn())}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

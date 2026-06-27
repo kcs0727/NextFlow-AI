@@ -1,8 +1,8 @@
 import { Webhook } from 'svix';
 import { headers } from 'next/headers';
 import { WebhookEvent } from '@clerk/nextjs/server';
-import { prisma } from '@/lib/db';
-import { redis } from '@/lib/redis';
+import { prisma } from '@/lib/server/db';
+import { redis } from '@/lib/server/redis';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {

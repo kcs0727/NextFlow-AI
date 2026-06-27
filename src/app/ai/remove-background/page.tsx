@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Eraser, Sparkles, Upload } from 'lucide-react';
-import { useAiStore } from '@/store/aiStore';
+import { useAiStore } from '@/store/aitoolsStore';
 
 export default function RemoveBg() {
   const [input, setInput] = useState<File | null>(null);
@@ -20,10 +20,10 @@ export default function RemoveBg() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 h-full text-slate3">
-      
+
       {/* Configuration Form */}
-      <form 
-        onSubmit={onsubmitHandler} 
+      <form
+        onSubmit={onsubmitHandler}
         className="w-full lg:max-w-md p-6 bg-primary rounded-2xl border border-slateb shadow-sm flex flex-col justify-between"
       >
         <div>
@@ -45,12 +45,12 @@ export default function RemoveBg() {
                     Supports PNG, JPG up to 10MB
                   </p>
                 </div>
-                <input 
-                  type="file" 
-                  accept="image/*" 
-                  className="hidden" 
-                  required 
-                  onChange={(e) => setInput(e.target.files?.[0] || null)} 
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  required
+                  onChange={(e) => setInput(e.target.files?.[0] || null)}
                 />
               </label>
             </div>
@@ -59,11 +59,11 @@ export default function RemoveBg() {
           {/* Toggle Public Visibility */}
           <div className="my-6 flex items-center gap-3 bg-slate95 p-3 rounded-xl border border-slateb">
             <label className="relative cursor-pointer inline-flex items-center">
-              <input 
-                type="checkbox" 
-                onChange={(e) => setPublish(e.target.checked)} 
-                checked={publish} 
-                className="sr-only peer" 
+              <input
+                type="checkbox"
+                onChange={(e) => setPublish(e.target.checked)}
+                checked={publish}
+                className="sr-only peer"
               />
               <div className="w-9 h-5 bg-slate8 rounded-full peer-checked:bg-red-500 transition-colors"></div>
               <span className="absolute left-1 top-1 w-3 h-3 bg-white rounded-full transition-transform peer-checked:translate-x-4"></span>
@@ -72,9 +72,9 @@ export default function RemoveBg() {
           </div>
         </div>
 
-        <button 
-          type="submit" 
-          className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-red-600 to-orange-900 hover:from-red-700 hover:to-orange-600 text-white px-5 py-3 text-sm font-semibold rounded-xl cursor-pointer shadow-md shadow-red-500/10 hover:shadow-lg disabled:opacity-50 transition" 
+        <button
+          type="submit"
+          className="w-full flex justify-center items-center gap-2 bg-gradient-to-r from-red-600 to-orange-900 hover:from-red-700 hover:to-orange-600 text-white px-5 py-3 text-sm font-semibold rounded-xl cursor-pointer shadow-md shadow-red-500/10 hover:shadow-lg disabled:opacity-50 transition"
           disabled={buttonLoading}
         >
           {loading ? (
@@ -101,9 +101,9 @@ export default function RemoveBg() {
         ) : (
           <div className="flex-1 flex items-center justify-center mt-6">
             <div className="rounded-xl overflow-hidden border border-slateb max-w-md bg-slate95 shadow-inner">
-              <img 
-                src={content} 
-                alt="AI Processed Result" 
+              <img
+                src={content}
+                alt="AI Processed Result"
                 className="w-full h-auto object-contain max-h-[450px]"
                 loading="eager"
               />

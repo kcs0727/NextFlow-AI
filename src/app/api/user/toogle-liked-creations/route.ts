@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkAuth } from '@/lib/auth-check';
-import { prisma } from '@/lib/db';
-import { redis } from '@/lib/redis';
+import { checkAuth } from '@/lib/server/auth-check';
+import { prisma } from '@/lib/server/db';
+import { redis } from '@/lib/server/redis';
 
 export async function POST(req: NextRequest) {
   try {
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
       success: true,
       message,
     });
-  } 
+  }
   catch (error: any) {
     console.error('toggle-liked-creations error:', error);
     return NextResponse.json({ success: false, message: error.message || 'Server error.' }, { status: 500 });
