@@ -11,22 +11,23 @@ type RightSidebarProps = {
   workflowName?: string;
 };
 
-const statusClasses: Record<string, string> = {
-  success: "bg-emerald-500/15 text-emerald-300 border-emerald-500/40",
-  failed: "bg-rose-500/15 text-rose-300 border-rose-500/40",
-  partial: "bg-amber-500/15 text-amber-300 border-amber-500/40",
-  running: "bg-amber-500/15 text-amber-300 border-amber-500/40",
-};
 
 export function RightSidebar({ runs, workflowName }: RightSidebarProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
 
+  const statusClasses: Record<string, string> = {
+    success: "dark:text-emerald-300 dark:bg-emerald-500/15 dark:border-emerald-500/40 bg-emerald-500/10 text-emerald-700 border-emerald-500/30",
+    failed: "dark:text-rose-300 dark:bg-rose-500/15 dark:border-rose-500/40 bg-rose-500/10 text-rose-700 border-rose-500/30",
+    partial: "dark:text-amber-300 dark:bg-amber-500/15 dark:border-amber-500/40 bg-amber-500/10 text-amber-700 border-amber-500/30",
+    running: "dark:text-amber-300 dark:bg-amber-500/15 dark:border-amber-500/40 bg-amber-500/10 text-amber-700 border-amber-500/30",
+  };
+
   return (
     <aside className="krea-scroll w-[350px] overflow-y-auto border-l border-slateb bg-primary p-4 backdrop-blur-xl">
       <div className="mb-4">
-        <h2 className="text-sm font-semibold tracking-[0.1em] text-slate3">Workflow History</h2>
+        <h2 className="text-sm font-semibold tracking-[0.1em] text-slate2">Workflow History</h2>
         {workflowName && (
-          <p className="mt-1 text-xs text-slate5">Project: {workflowName}</p>
+          <p className="mt-1 text-xs text-slate4">Project: {workflowName}</p>
         )}
       </div>
 
@@ -40,16 +41,16 @@ export function RightSidebar({ runs, workflowName }: RightSidebarProps) {
         {runs.map((run) => {
           const isOpen = expanded === run.id;
           return (
-            <div key={run.id} className="rounded-xl border border-slateb bg-buttonbg">
+            <div key={run.id} className="rounded-xl border border-slateb bg-primarybg">
               <button
                 onClick={() => setExpanded(isOpen ? null : run.id)}
                 className="flex w-full items-start justify-between gap-3 p-3 text-left"
               >
                 <div>
-                  <p className="text-xs text-slate4">
+                  <p className="text-xs text-slate3">
                     {format(new Date(run.createdAt), "MMM d, yyyy h:mm:ss a")}
                   </p>
-                  <p className="mt-1 text-[11px] text-slate5">
+                  <p className="mt-1 text-[11px] text-slate4">
                     scope: {run.scope} • {run.durationMs}ms
                   </p>
                 </div>
@@ -78,8 +79,8 @@ export function RightSidebar({ runs, workflowName }: RightSidebarProps) {
                           {node.status}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate5">{node.durationMs}ms</p>
-                      
+                      <p className="text-[11px] text-slate4">{node.durationMs}ms</p>
+
                       {/* Show outputs */}
                       {node.outputs && Object.keys(node.outputs).length > 0 && (
                         <div className="mt-2 space-y-1 border-t border-slateb pt-2">
@@ -100,7 +101,7 @@ export function RightSidebar({ runs, workflowName }: RightSidebarProps) {
                         </div>
                       )}
 
-                      {node.error ? <p className="mt-1 text-[11px] text-rose-300">{node.error}</p> : null}
+                      {node.error ? <p className="mt-1 text-[11px] dark:text-rose-300 text-rose-600">{node.error}</p> : null}
                     </div>
                   ))}
                 </div>

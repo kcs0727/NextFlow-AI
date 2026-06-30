@@ -48,7 +48,6 @@ type WorkflowState = {
   redo: () => void;
   loadGraph: (nodes: WorkflowNode[], edges: WorkflowEdge[], workflowId?: string, workflowName?: string) => void;
   getRunnableNodes: (scope: HistoryScope) => WorkflowNode[];
-  // Trigger / run history actions
   addRunHistory: (entry: WorkflowRunHistory) => void;
   setHistory: (history: WorkflowRunHistory[]) => void;
 };
@@ -293,11 +292,37 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
   },
 
   loadGraph: (nodes, edges, workflowId, workflowName) => {
+    // Ensure all edges are animated
+    const animatedEdges = (edges ?? []).map((edge) => ({
+      ...edge,
+      animated: true,
+    }));
+
+    // Compute connectedInputs for all nodes
+    const connectedInputsByNode = new Map<string, Record<string, boolean>>();
+    for (const edge of animatedEdges) {
+      if (!edge.targetHandle) continue;
+      const val = connectedInputsByNode.get(edge.target) ?? {};
+      val[edge.targetHandle] = true;
+      connectedInputsByNode.set(edge.target, val);
+    }
+
+    const updatedNodes = (nodes ?? []).map((node) => {
+      const connected = connectedInputsByNode.get(node.id) ?? {};
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          connectedInputs: connected,
+        },
+      };
+    });
+
     set({
       workflowId,
       workflowName: workflowName ?? "Untitled Workflow",
-      nodes,
-      edges,
+      nodes: updatedNodes,
+      edges: animatedEdges,
       undoStack: [],
       redoStack: [],
     });
@@ -323,11 +348,5 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
 
   setHistory: (history) => set({ history }),
 }));
-
-export function nodeRunMap(nodeRuns: { nodeId: string }[]) {
-  const map = new Map<string, (typeof nodeRuns)[number]>();
-  for (const run of nodeRuns) map.set(run.nodeId, run);
-  return map;
-}
 
 export default useWorkflowStore;

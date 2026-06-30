@@ -4,13 +4,14 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { FileText, Sparkles, Upload } from 'lucide-react';
 import { useAiStore } from '@/store/aitoolsStore';
+import { reviewresume } from '@/services/aitools';
 
 export default function ReviewResume() {
   const [input, setInput] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('');
 
-  const { reviewresume, buttonLoading } = useAiStore();
+  const { buttonLoading } = useAiStore();
 
   const onsubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();

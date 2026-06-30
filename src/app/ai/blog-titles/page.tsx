@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Hash, Sparkles } from 'lucide-react';
 import { useAiStore } from '@/store/aitoolsStore';
-import { useTheme } from 'next-themes';
-
+import { blogtitles } from '@/services/aitools';
 const blogCategories = [
   'General', 'Technology', 'Business', 'Health', 'Lifestyle', 'Education', 'Travel', 'Food'
 ];
@@ -15,10 +14,8 @@ export default function BlogTitles() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('');
-  const { theme: nextTheme, resolvedTheme } = useTheme();
-  const currentTheme = resolvedTheme ?? nextTheme ?? "dark";
 
-  const { blogtitles, buttonLoading } = useAiStore();
+  const { buttonLoading } = useAiStore();
 
   const onsubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +57,7 @@ export default function BlogTitles() {
                   key={item}
                   className={`text-xs px-4 py-2 border rounded-full cursor-pointer transition font-medium
                     ${selectedCategory === item
-                      ? `${currentTheme === 'dark' ? 'bg-purple-950/20 border-purple-900/50' : 'bg-purple-50 border-purple-300'} text-purple-700 font-bold`
+                      ? "dark:bg-purple-950/20 dark:border-purple-900/50 bg-purple-50 border-purple-300 text-purple-700 font-bold"
                       : 'text-slate4 border-slateb hover:bg-slate9'}`}
                   onClick={() => setSelectedCategory(item)}
                 >

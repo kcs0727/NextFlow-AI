@@ -12,25 +12,21 @@ import {
     type OnSelectionChangeParams,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { SignInButton, useAuth, useUser } from "@clerk/nextjs";
 import { ChevronDown, Download, Hand, Maximize2, MousePointer2, MoonStar, PanelRightOpen, Play, Plus, Redo2, Save, Scissors, Share2, SunMedium, Trash2, Undo2, Upload, ZoomIn, ZoomOut } from "lucide-react";
 import { useTheme } from "next-themes";
-import axios from "@/lib/axios";
 import toast from "react-hot-toast";
-import { LeftSidebar } from "@/components/nodeeditor/shell/left-sidebar";
-import { RightSidebar } from "@/components/nodeeditor/shell/right-sidebar";
+import { LeftSidebar } from "@/components/nodeeditor/left-sidebar";
+import { RightSidebar } from "@/components/nodeeditor/right-sidebar";
 import { nodeTypes } from "@/components/nodeeditor/flow/node-types";
 import { NODE_OPTIONS } from "@/components/nodeeditor/flow/node-metadata";
 import { executeScope } from "@/lib/workflow/executor";
 import { useWorkflowStore } from "@/store/workflowStore";
+import { fetchWorkflow, fetchRuns, saveWorkflow as saveWorkflowAction } from "@/services/workflow";
 import { createSampleWorkflow } from "@/lib/workflow/sample-workflow";
 import type { WorkflowNodeKind } from "@/types/workflow";
 
 
 function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: string }) {
-    const { userId } = useAuth();
-    const isAuthenticated = Boolean(userId);
-    const { user, isLoaded } = useUser();
     const {
         workflowId: savedWorkflowId,
         workflowName,
@@ -102,42 +98,18 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
 
     useEffect(() => {
         if (!routeWorkflowId) {
-            if (!isAuthenticated) {
-                setHistory([]);
-                loadGraph([], [], undefined, "Untitled Workflow");
-                return;
-            }
-
             setHistory([]);
             loadGraph([], [], undefined, "Untitled Workflow");
             return;
         }
 
-        if (!isAuthenticated) {
-            setHistory([]);
-            return;
-        }
-
         const bootstrap = async () => {
-            try {
-                const { data: wfData } = await axios.get(`/api/workflows/save/${routeWorkflowId}`);
-                const workflow = wfData.workflow;
-                if (workflow) {
-                    const graph = workflow.graphJson as { nodes: typeof nodes; edges: typeof edges };
-                    loadGraph(graph.nodes ?? [], graph.edges ?? [], workflow.id, workflow.name);
-                }
-            } catch { /* workflow not found — ignore */ }
-
-            try {
-                const { data: runData } = await axios.get("/api/workflows/runs", {
-                    params: { workflowId: routeWorkflowId },
-                });
-                setHistory(runData.runs ?? []);
-            } catch { /* runs not found — ignore */ }
+            await fetchWorkflow(routeWorkflowId);
+            await fetchRuns(routeWorkflowId);
         };
 
         void bootstrap();
-    }, [isAuthenticated, routeWorkflowId, loadGraph, setHistory]);
+    }, [routeWorkflowId, fetchWorkflow, fetchRuns, setHistory, loadGraph]);
 
     const onSelectionChange = useCallback((params: OnSelectionChangeParams) => {
         setSelectedNodeIds((params.nodes ?? []).map((n) => n.id));
@@ -146,23 +118,8 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
     const saveWorkflow = useCallback(async () => {
         setActiveButtonId("save");
         setTimeout(() => setActiveButtonId(null), 300);
-        try {
-            const { data } = await axios.post("/api/workflows/save", {
-                id: savedWorkflowId,
-                name: workflowName,
-                graph: { nodes, edges },
-            });
-            const workflow = data.workflow as { id: string; name: string; graphJson: { nodes: typeof nodes; edges: typeof edges } } | undefined;
-            if (workflow) {
-                loadGraph(workflow.graphJson.nodes ?? [], workflow.graphJson.edges ?? [], workflow.id, workflow.name);
-            }
-            toast.success("Workflow saved successfully!");
-        } catch (err: any) {
-            const errMsg = err.response?.data?.error ?? err.response?.data?.message ?? err.message ?? "Error saving workflow";
-            toast.error(errMsg);
-            console.error(err);
-        }
-    }, [savedWorkflowId, workflowName, nodes, edges, loadGraph]);
+        await saveWorkflowAction();
+    }, [saveWorkflowAction]);
 
     const exportWorkflow = useCallback(() => {
         setActiveButtonId("export");
@@ -275,43 +232,39 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
     const selectToolClass =
         activeTool === "select"
             ? "border-blue-500/40 bg-blue-500/18 text-blue-400"
-            : "text-slate4 hover:bg-buttonhoverbg hover:text-slate2";
+            : "text-slate3 hover:bg-buttonhoverbg";
     const handToolClass =
         activeTool === "hand"
             ? "border-blue-500/40 bg-blue-500/18 text-blue-400"
-            : "text-slate4 hover:bg-buttonhoverbg hover:text-slate2";
+            : "text-slate3 hover:bg-buttonhoverbg";
 
 
     return (
         <div className="flex h-[calc(100vh-1px)] w-full overflow-hidden bg-primary text-slate2">
             <LeftSidebar
                 onAddNode={(kind) => {
-                    if (!isAuthenticated) return;
                     addNode(kind);
                 }}
                 onLoadSampleWorkflow={loadSampleWorkflow}
                 collapsed={sidebarCollapsed}
                 onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
-                authenticated={isAuthenticated}
             />
 
-            <main className="relative flex-1 bg-canvabg">
+            <main className="relative flex-1 bg-primarybg">
 
                 <div className="pointer-events-none absolute left-4 right-4 top-4 z-30 flex items-start justify-between">
                     <div ref={projectMenuRef} className="pointer-events-auto relative flex items-center gap-2 rounded-xl border border-slateb bg-buttonbg p-2 backdrop-blur-md">
                         <button
                             type="button"
                             onClick={() => setProjectMenuOpen((value) => !value)}
-                            disabled={!isAuthenticated}
                             aria-label="Open project menu"
-                            className="rounded-lg p-1 text-slate4 transition hover:bg-slate8 hover:text-slate2 disabled:opacity-40"
+                            className="rounded-lg p-1 text-slate4 transition hover:bg-slate8 hover:text-slate2"
                         >
                             <ChevronDown className={`h-4 w-4 transition-transform ${projectMenuOpen ? "rotate-180" : ""}`} />
                         </button>
                         <input
                             value={workflowName}
                             onChange={(e) => setWorkflowName(e.target.value)}
-                            disabled={!isAuthenticated}
                             className="w-40 bg-transparent text-sm font-medium text-slate2 outline-none"
                         />
 
@@ -323,8 +276,7 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
                                         setProjectMenuOpen(false);
                                         fileInputRef.current?.click();
                                     }}
-                                    disabled={!isAuthenticated}
-                                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-slate3 transition hover:bg-slate8 disabled:opacity-40"
+                                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-slate3 transition hover:bg-slate8"
                                 >
                                     <Upload className="h-4 w-4" />
                                     Import
@@ -334,8 +286,7 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
                                         setProjectMenuOpen(false);
                                         exportWorkflow();
                                     }}
-                                    disabled={!isAuthenticated}
-                                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-slate3 transition hover:bg-slate8 disabled:opacity-40"
+                                    className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-slate3 transition hover:bg-slate8"
                                 >
                                     <Download className="h-4 w-4" />
                                     Export
@@ -349,7 +300,6 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
                             <button
                                 key={item.label}
                                 onClick={() => item.fn()}
-                                disabled={!isAuthenticated}
                                 className={`flex items-center gap-2 rounded-xl border border-slateb px-3 py-2 text-xs text-slate3 backdrop-blur transition ${activeButtonId === item.id
                                     ? "bg-cyan-500/40 border-cyan-500/60 text-blue-400"
                                     : "bg-buttonbg hover:border-slate5 hover:bg-buttonhoverbg"
@@ -411,38 +361,27 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
-                    onNodesChange={(changes) => {
-                        if (!isAuthenticated) return;
-                        onNodesChange(changes);
-                    }}
-                    onEdgesChange={(changes) => {
-                        if (!isAuthenticated) return;
-                        onEdgesChange(changes);
-                    }}
-                    onConnect={(connection) => {
-                        if (!isAuthenticated) return;
-                        onConnect(connection);
-                    }}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
                     onSelectionChange={onSelectionChange}
                     fitView
                     nodeTypes={nodeTypes}
                     proOptions={{ hideAttribution: true }}
-                    selectionOnDrag={isAuthenticated && activeTool === "select"}
-                    panOnDrag={isAuthenticated && activeTool === "hand"}
-                    panOnScroll={isAuthenticated}
-                    nodesDraggable={isAuthenticated && activeTool === "hand"}
-                    nodesConnectable={isAuthenticated}
-                    elementsSelectable={isAuthenticated}
+                    selectionOnDrag={activeTool === "select"}
+                    panOnDrag={activeTool === "hand"}
+                    panOnScroll={true}
+                    nodesDraggable={activeTool === "hand"}
+                    nodesConnectable={true}
+                    elementsSelectable={true}
                     minZoom={0.2}
                     maxZoom={2}
                     deleteKeyCode={["Delete", "Backspace"]}
                     onDragOver={(event) => {
-                        if (!isAuthenticated) return;
                         event.preventDefault();
                         event.dataTransfer.dropEffect = "move";
                     }}
                     onDrop={(event) => {
-                        if (!isAuthenticated) return;
                         event.preventDefault();
 
                         const kind = event.dataTransfer.getData("application/nextflow-node-kind") as WorkflowNodeKind;
@@ -470,26 +409,26 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
 
                 {nodes.length === 0 ? (
                     <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-                        <p className="px-4 py-2 text-md tracking-wide text-slate5 font-semibold backdrop-blur-sm">
+                        <p className="px-4 py-2 text-md tracking-wide text-slate3 font-semibold backdrop-blur-sm">
                             Add a node to start
                         </p>
                     </div>
                 ) : null}
 
                 <div className="absolute bottom-4 left-4 z-30 flex items-center gap-2 rounded-2xl border border-slateb bg-buttonbg p-1 backdrop-blur-md">
-                    <button onClick={undo} disabled={!isAuthenticated} className="rounded-xl p-2 text-slate4 hover:bg-buttonhoverbg hover:text-slate2 disabled:opacity-40 relative group">
+                    <button onClick={undo} className="rounded-xl p-2 text-slate3 hover:bg-buttonhoverbg relative group">
                         <Undo2 className="h-5 w-5" />
                         <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate9 text-slate2 text-xs px-2 py-1 rounded whitespace-nowrap">
                             Undo
                         </span>
                     </button>
-                    <button onClick={redo} disabled={!isAuthenticated} className="rounded-xl p-2 text-slate4 hover:bg-buttonhoverbg hover:text-slate2 disabled:opacity-40 relative group" >
+                    <button onClick={redo} className="rounded-xl p-2 text-slate3 hover:bg-buttonhoverbg relative group" >
                         <Redo2 className="h-5 w-5" />
                         <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate9 text-slate2 text-xs px-2 py-1 rounded whitespace-nowrap">
                             Redo
                         </span>
                     </button>
-                    <button onClick={deleteSelected} disabled={!isAuthenticated} className="rounded-xl p-2 text-slate4 hover:bg-buttonhoverbg hover:text-slate2 disabled:opacity-40 relative group">
+                    <button onClick={deleteSelected} className="rounded-xl p-2 text-slate3 hover:bg-buttonhoverbg relative group">
                         <Trash2 className="h-5 w-5" />
                         <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate9 text-slate2 text-xs px-2 py-1 rounded whitespace-nowrap">
                             Delete
@@ -502,8 +441,7 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
                     <div ref={addNodeMenuRef} className="relative">
                         <button
                             onClick={() => setAddNodeMenuOpen((value) => !value)}
-                            disabled={!isAuthenticated}
-                            className="group rounded-xl p-2 text-slate2 transition hover:bg-buttonhoverbg hover:text-slate2 disabled:opacity-40 relative"
+                            className="group rounded-xl p-2 text-slate3 transition hover:bg-buttonhoverbg relative"
                             aria-expanded={addNodeMenuOpen}
                             aria-haspopup="menu"
                             title="Add Node"
@@ -516,7 +454,7 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
 
                         {addNodeMenuOpen ? (
                             <div className="absolute bottom-[calc(100%+0.75rem)] left-1/2 w-72 -translate-x-1/2 rounded-2xl border border-slateb bg-primary p-2 shadow-[0_24px_70px_rgba(0,0,0,0.35)]">
-                                <p className="px-3 pb-2 pt-1 text-[11px] uppercase tracking-[0.2em] text-slate5">Add a node</p>
+                                <p className="px-3 pb-2 pt-1 text-[11px] uppercase tracking-[0.2em] text-slate3">Add a node</p>
                                 <div className="space-y-1">
                                     {NODE_OPTIONS.map((item) => {
                                         const Icon = item.icon;
@@ -543,8 +481,7 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
                     </div>
                     <button
                         onClick={() => setActiveTool("select")}
-                        disabled={!isAuthenticated}
-                        className={`rounded-xl hover:bg-buttonhoverbg p-2 text-slate2 transition hover:text-slate2 disabled:opacity-40 relative group ${selectToolClass}`}
+                        className={`rounded-xl hover:bg-buttonhoverbg p-2 text-slate3 transition relative group ${selectToolClass}`}
                         aria-pressed={activeTool === "select"}
 
                     >
@@ -555,8 +492,7 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
                     </button>
                     <button
                         onClick={() => setActiveTool("hand")}
-                        disabled={!isAuthenticated}
-                        className={`rounded-xl hover:bg-buttonhoverbg p-2 text-slate2 transition hover:text-slate2 disabled:opacity-40 relative group ${handToolClass}`}
+                        className={`rounded-xl hover:bg-buttonhoverbg p-2 text-slate3 transition relative group ${handToolClass}`}
                         aria-pressed={activeTool === "hand"}
 
                     >
@@ -567,8 +503,8 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
                     </button>
                     <button
                         onClick={() => cutSelectedEdges()}
-                        disabled={!isAuthenticated || selectedNodeIds.length === 0}
-                        className="rounded-xl hover:bg-buttonhoverbg p-2 text-slate4 transition hover:text-slate2 disabled:opacity-40 relative group"
+                        disabled={selectedNodeIds.length === 0}
+                        className="rounded-xl hover:bg-buttonhoverbg p-2 text-slate3 transition disabled:opacity-40 relative group"
 
                     >
                         <Scissors className="h-5 w-5" />
@@ -576,19 +512,19 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
                             Cut Edges
                         </span>
                     </button>
-                    <button onClick={() => void zoomOut()} disabled={!isAuthenticated} className="rounded-xl p-2 text-slate4 hover:bg-buttonhoverbg transition hover:text-slate2 disabled:opacity-40 relative group" >
+                    <button onClick={() => void zoomOut()} className="rounded-xl p-2 text-slate3 hover:bg-buttonhoverbg transition relative group" >
                         <ZoomOut className="h-5 w-5" />
                         <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate9 text-slate2 text-xs px-2 py-1 rounded whitespace-nowrap">
                             Zoom Out
                         </span>
                     </button>
-                    <button onClick={() => void zoomIn()} disabled={!isAuthenticated} className="rounded-xl p-2 text-slate4 hover:bg-buttonhoverbg transition hover:text-slate2 disabled:opacity-40 relative group" >
+                    <button onClick={() => void zoomIn()} className="rounded-xl p-2 text-slate3 hover:bg-buttonhoverbg transition relative group" >
                         <ZoomIn className="h-5 w-5" />
                         <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate9 text-slate2 text-xs px-2 py-1 rounded whitespace-nowrap">
                             Zoom In
                         </span>
                     </button>
-                    <button onClick={() => void fitView({ padding: 0.2, duration: 300 })} disabled={!isAuthenticated} className="rounded-xl p-2 text-slate4 hover:bg-buttonhoverbg transition hover:text-slate2 disabled:opacity-40 relative group">
+                    <button onClick={() => void fitView({ padding: 0.2, duration: 300 })} className="rounded-xl p-2 text-slate3 hover:bg-buttonhoverbg transition relative group">
                         <Maximize2 className="h-5 w-5" />
                         <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate9 text-slate2 text-xs px-2 py-1 rounded whitespace-nowrap">
                             Fit View
@@ -596,18 +532,6 @@ function WorkflowBuilderInner({ workflowId: routeWorkflowId }: { workflowId?: st
                     </button>
                 </div>
 
-                {!isAuthenticated ? (
-                    <div className="absolute inset-0 z-20 flex items-center justify-center bg-[#090a0d]/76 backdrop-blur-[1px]">
-                        <div className="rounded-2xl border border-slateb bg-slate95 p-6 text-center">
-                            <p className="mb-3 text-sm font-semibold text-slate3">Authentication required to use the Node Editor</p>
-                            <SignInButton mode="modal">
-                                <button className="rounded-xl border border-slateb bg-slate9 px-4 py-2 text-sm font-semibold text-slate2">
-                                    Sign In to Continue
-                                </button>
-                            </SignInButton>
-                        </div>
-                    </div>
-                ) : null}
             </main>
 
             {historyOpen ? <RightSidebar runs={history} workflowName={workflowName} /> : null}

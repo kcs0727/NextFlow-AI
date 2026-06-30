@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Edit, Sparkles, AlertCircle } from 'lucide-react';
 import { useAiStore } from '@/store/aitoolsStore';
+import { writearticle } from '@/services/aitools';
 import { SelectedLength } from '@/types';
-import { useTheme } from 'next-themes';
 
 const articleLengthOptions: SelectedLength[] = [
   { length: 800, text: 'Short (500-800 words)' },
@@ -18,10 +18,8 @@ export default function WriteArticle() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('');
-  const { theme: nextTheme, resolvedTheme } = useTheme();
-  const currentTheme = resolvedTheme ?? nextTheme ?? "dark";
 
-  const { writearticle, buttonLoading } = useAiStore();
+  const { buttonLoading } = useAiStore();
 
   const onsubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +61,7 @@ export default function WriteArticle() {
                   key={item.text}
                   className={`text-xs px-4 py-2 border rounded-full cursor-pointer transition font-medium
                     ${selectedLen.text === item.text
-                      ? `${currentTheme === 'dark' ? 'bg-blue-950/35 border-blue-900/50' : 'bg-blue-50 border-blue-300'} text-blue-500 font-bold`
+                      ? 'dark:bg-blue-950/35 dark:border-blue-900/50 bg-blue-50 border-blue-300 text-blue-500 font-bold'
                       : 'text-slate4 border-slateb hover:bg-slate9'}`}
                   onClick={() => setSelectedLen(item)}
                 >

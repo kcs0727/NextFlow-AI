@@ -4,14 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { Heart, Image as ImageIcon, Flame, MessageSquare, Compass } from 'lucide-react';
 import { useUserStore } from '@/store/userStore';
+import { fetchcreations, tooglelikes } from '@/services/aitools';
 import { Creation } from '@/types';
 
 export default function Community() {
   const [creations, setCreations] = useState<Creation[]>([]);
   const { user, isLoaded } = useUser();
   const [loading, setLoading] = useState(true);
-
-  const { fetchcreations, tooglelikes } = useUserStore();
 
   useEffect(() => {
     if (isLoaded && user) {

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, MoreVertical, Trash2, WandSparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { useUserStore } from '@/store/userStore';
+import { renameWorkflow, deleteWorkflow } from '@/services/workflow';
 import { WorkflowCard as WorkflowCardType } from '@/types/workflow';
 
 interface WorkflowCardProps {
@@ -21,7 +21,6 @@ export default function WorkflowCard({
   onDeleteSuccess,
 }: WorkflowCardProps) {
   const router = useRouter();
-  const { renameWorkflow, deleteWorkflow } = useUserStore();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [isRenaming, setIsRenaming] = useState(false);

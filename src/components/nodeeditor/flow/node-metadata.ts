@@ -63,7 +63,7 @@ export function getNodeOption(kind: WorkflowNodeKind): NodeOption {
 }
 
 export function getHandleTone(kind: WorkflowNodeKind): NodeTone {
-  return kind === "text" ? "orange" : "blue";
+  return (kind === "text" || kind==='runAnyLlm') ? "orange" : "blue";
 }
 
 export const HANDLE_TONE_CLASS: Record<NodeTone, string> = {

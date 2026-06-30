@@ -41,10 +41,11 @@ type OutputHandleProps = {
   top?: string;
   label?: string;
   kind: WorkflowNodeKind;
+  tone?: NodeTone;
 };
 
-export function OutputHandle({ id = "output", top = "50%", label, kind }: OutputHandleProps) {
-  const tone = getHandleTone(kind);
+export function OutputHandle({ id = "output", top = "50%", label, kind, tone }: OutputHandleProps) {
+  const resolvedTone = tone ?? getHandleTone(kind);
 
   return (
     <div className="relative" style={{ position: "absolute", right: 0, top }}>
@@ -52,8 +53,8 @@ export function OutputHandle({ id = "output", top = "50%", label, kind }: Output
         type="source"
         id={id}
         position={Position.Right}
-        className={cn("h-3.5 w-3.5 rounded-full border", HANDLE_TONE_CLASS[tone])}
-        style={HANDLE_TONE_STYLE[tone]}
+        className={cn("h-3.5 w-3.5 rounded-full border", HANDLE_TONE_CLASS[resolvedTone])}
+        style={HANDLE_TONE_STYLE[resolvedTone]}
         isConnectable
       />
     </div>

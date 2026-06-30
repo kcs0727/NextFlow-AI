@@ -5,7 +5,6 @@ import ReactMarkdown from 'react-markdown';
 import { ChevronDown, ChevronUp, Image as ImageIcon, FileText, Hash, SquarePen } from 'lucide-react';
 
 import { Creation } from '@/types';
-import { useTheme } from 'next-themes';
 
 interface CreationItemProps {
   item: Creation;
@@ -21,15 +20,13 @@ const typeIcons: Record<string, any> = {
 
 export default function Creationitem({ item }: CreationItemProps) {
   const [expanded, setExpanded] = useState(false);
-  const { theme: nextTheme, resolvedTheme } = useTheme();
-  const currentTheme = resolvedTheme ?? nextTheme ?? "dark";
   const IconComponent = typeIcons[item.type] || FileText;
 
   const typeColors: Record<string, string> = {
-  article: `${currentTheme==='dark'?'bg-blue-950/35 border-blue-900/50':'bg-blue-50 border-blue-300'} text-blue-500`  ,
-  'blog-titles': `${currentTheme==='dark'?'bg-purple-950/20 border-purple-900/50':'bg-purple-50 border-purple-300'} text-purple-700`,
-  image: `${currentTheme==='dark'?'bg-green-950/20 border-green-900/50':'bg-green-50 border-green-300'} text-green-500`,
-  'review-resume': `${currentTheme==='dark'?'bg-teal-950/20 border-teal-900/50':'bg-teal-50 border-teal-300'} text-teal-500`,
+  article: `dark:bg-blue-950/35 dark:border-blue-900/50 bg-blue-50 border-blue-300 text-blue-500`  ,
+  'blog-titles': `dark:bg-purple-950/20 dark:border-purple-900/50 bg-purple-50 border-purple-300 text-purple-700`,
+  image: `dark:bg-green-950/20 dark:border-green-900/50 bg-green-50 border-green-300 text-green-500`,
+  'review-resume': `dark:bg-teal-950/20 dark:border-teal-900/50 bg-teal-50 border-teal-300 text-teal-500`,
 };
   const colorClass = typeColors[item.type] || 'bg-slate-50 border-slate-200 text-slate-700 dark:bg-slate-900/50 dark:border-slate-800 dark:text-slate-400';
 

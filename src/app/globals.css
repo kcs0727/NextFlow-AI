@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   color-scheme: light;
@@ -23,13 +24,9 @@
   --primarybg: #f6f6f6;
 
   /* Component-level tokens (NextFlow merge) */
-  --cardbg1: #f1f1f1;
-  --cardhoverbg: #f0f0f0;
   --buttonbg: #e8e8e840;
   --buttonhoverbg: #e0e0e0;
-  --canvabg: #f5f5f540;
   --nodebg: #fafafa;
-  --dialogbg: #fcfcfc;
 }
 
 .dark {
@@ -55,13 +52,9 @@
   --primarybg: #18181c;
 
   /* Component-level tokens (NextFlow merge) */
-  --cardbg1: #1b1b1b;
-  --cardhoverbg: #1e1e1e;
   --buttonbg: #625c5c40;
   --buttonhoverbg: #1a1c23;
-  --canvabg: #46464640;
   --nodebg: #1f1f1f;
-  --dialogbg: #11131a;
 }
 
 @theme inline {
@@ -83,13 +76,9 @@
 
   
   --color-primarybg: var(--primarybg);
-  --color-cardbg1: var(--cardbg1);
-  --color-cardhoverbg: var(--cardhoverbg);
   --color-buttonbg: var(--buttonbg);
   --color-buttonhoverbg: var(--buttonhoverbg);
-  --color-canvabg: var(--canvabg);
   --color-nodebg: var(--nodebg);
-  --color-dialogbg: var(--dialogbg);
 }
 
 body {

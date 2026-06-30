@@ -5,34 +5,30 @@ import { useUser } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, FolderPlus, Search, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTheme } from "next-themes";
-import { useUserStore } from "@/store/userStore";
+import { fetchAllWorkflows } from "@/services/workflow";
 import { WorkflowCard as WorkflowCardType } from "@/types/workflow";
 import WorkflowCard from "@/components/WorkflowCard";
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isLoaded } = useUser();
-  const { fetchWorkflows } = useUserStore();
 
   const [workflows, setWorkflows] = useState<WorkflowCardType[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const { theme: nextTheme, resolvedTheme } = useTheme();
-  const currentTheme = resolvedTheme ?? nextTheme ?? "dark";
 
   useEffect(() => {
     if (!user) return;
 
     const loadWorkflows = async () => {
       setLoading(true);
-      const data = await fetchWorkflows();
+      const data = await fetchAllWorkflows();
       setWorkflows(data);
       setLoading(false);
     };
 
     void loadWorkflows();
-  }, [user, fetchWorkflows]);
+  }, [user, fetchAllWorkflows]);
 
   const filteredWorkflows = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -80,7 +76,7 @@ export default function DashboardPage() {
             transition={{ duration: 0.7 }}
           >
             <div>
-              <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${currentTheme === 'dark' ? 'bg-blue-900/30 border-blue-800/40 text-blue-400' : 'bg-blue-50 border-blue-200/50 text-blue-600'} text-xs font-semibold uppercase tracking-wider mb-6`}>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full dark:bg-blue-900/30 dark:border-blue-800/40 dark:text-blue-400 bg-blue-50 border-blue-200/50 text-blue-600 text-xs font-semibold uppercase tracking-wider mb-6">
                 <Sparkles className="w-3.5 h-3.5 text-blue-500 animate-pulse" /> Visual Workflow Builder
               </div>
               <h1 className="mt-2 max-w-2xl text-3xl font-extrabold tracking-tight md:text-5xl text-slate1">
@@ -105,7 +101,7 @@ export default function DashboardPage() {
 
             {/* Decorative cards — matching Final_Project premium aesthetic */}
             <div className="hidden w-[480px] shrink-0 lg:block">
-              <div className="relative h-[280px] rounded-2xl border border-slateb bg-slate95/50 p-6 backdrop-blur-xl overflow-hidden">
+              <div className="relative h-[280px] rounded-2xl border border-slateb bg-slate95/30 p-6 backdrop-blur-xl overflow-hidden">
                 <div className="absolute left-6 top-6 h-36 w-36 rounded-full bg-blue-500/15 blur-3xl" />
                 <div className="absolute right-8 top-6 h-28 w-28 rounded-full bg-purple-500/10 blur-3xl" />
                 <div className="grid h-full grid-cols-3 gap-3">
@@ -115,7 +111,7 @@ export default function DashboardPage() {
                     animate={{ opacity: 1, y: 6 }}
                     transition={{ delay: 0.3 }}
                   >
-                    <div className="mb-3 h-16 rounded-xl bg-gradient-to-br from-blue-500/20 to-indigo-500/10" />
+                    <div className="mb-3 h-16 rounded-xl bg-gradient-to-br from-zinc-500/40 to-zinc-200/10" />
                     <div className="space-y-2">
                       <div className="h-2 w-20 rounded-full bg-slate7" />
                       <div className="h-2 w-14 rounded-full bg-slate8" />
@@ -139,7 +135,7 @@ export default function DashboardPage() {
                     animate={{ opacity: 1, y: 4 }}
                     transition={{ delay: 0.7 }}
                   >
-                    <div className="mb-3 h-16 rounded-xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/10" />
+                    <div className="mb-3 h-16 rounded-xl bg-gradient-to-br from-emerald-300/30 to-cyan-400/10" />
                     <div className="space-y-2">
                       <div className="h-2 w-14 rounded-full bg-slate7" />
                       <div className="h-2 w-10 rounded-full bg-slate8" />

@@ -56,6 +56,7 @@ async function waitForAssemblyCompletion(accessToken: string, assemblyId: string
                     headers: {
                         Authorization: `Bearer ${accessToken}`,
                     },
+                    withCredentials: false,
                 }
             );
 
@@ -134,6 +135,7 @@ export async function uploadViaTransloadit(
                 headers: {
                     Authorization: `Bearer ${session.accessToken}`,
                 },
+                withCredentials: false,
             }
         );
         payload = data;

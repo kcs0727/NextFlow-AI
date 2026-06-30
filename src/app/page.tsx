@@ -96,7 +96,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${currentTheme === 'dark' ? 'bg-blue-900/30 border-blue-800/40 text-blue-400' : 'bg-blue-50 border-blue-200/50 text-blue-600'} text-xs font-semibold uppercase tracking-wider mb-6`}>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full dark:bg-blue-900/30 dark:border-blue-800/40 dark:text-blue-400 bg-blue-50 border-blue-200/50 text-blue-600 text-xs font-semibold uppercase tracking-wider mb-6">
             <Sparkles className="w-3.5 h-3.5 text-blue-500 animate-pulse" /> Rebuilt with Next.js & Redis Caching
           </div>
 

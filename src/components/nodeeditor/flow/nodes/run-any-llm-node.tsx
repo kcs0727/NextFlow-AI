@@ -7,6 +7,7 @@ import { useWorkflowStore } from "@/store/workflowStore";
 import { InputHandle, OutputHandle } from "@/components/nodeeditor/flow/handles";
 import { NodeShell } from "@/components/nodeeditor/flow/node-shell";
 import { ChevronDown } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
 
 function TextField({
     label,
@@ -64,7 +65,7 @@ function RunAnyLlmNode({ id, data, selected }: NodeProps) {
             {/* Input Handles */}
             <InputHandle id="system_prompt" top="45%" label="system" kind={typedData.kind} tone="orange" />
             <InputHandle id="user_message" top="75%" label="message" kind={typedData.kind} tone="orange" />
-            <InputHandle id="images" top="90%" label="images" kind={typedData.kind} />
+            <InputHandle id="images" top="90%" label="images" kind={typedData.kind} tone="blue"/>
 
             <div className="space-y-3">
                 {/* Model Selector */}
@@ -139,7 +140,7 @@ function RunAnyLlmNode({ id, data, selected }: NodeProps) {
                         </button>
                         {expandResult && (
                             <div className="max-h-48 overflow-y-auto rounded-xl border border-emerald-600/40 bg-slate95 p-3 text-xs leading-5 text-slate2">
-                                {typedData.inlineResult}
+                                <ReactMarkdown>{typedData.inlineResult}</ReactMarkdown>
                             </div>
                         )}
                     </div>

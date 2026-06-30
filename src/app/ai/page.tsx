@@ -5,6 +5,7 @@ import { useUser } from '@clerk/nextjs';
 import { Gem, Sparkles, FolderOpen, AlertCircle } from 'lucide-react';
 import { Creationitem } from '@/components/Creationitem';
 import { useUserStore } from '@/store/userStore';
+import { getdashboarddata } from '@/services/aitools';
 import { Creation } from '@/types';
 
 export default function Dashboard() {
@@ -13,7 +14,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   
-  const { getdashboarddata, freeUsageCount, isPremium } = useUserStore();
+  const { freeUsageCount, isPremium } = useUserStore();
 
   useEffect(() => {
     getdashboarddata(setCreations, setLoading);

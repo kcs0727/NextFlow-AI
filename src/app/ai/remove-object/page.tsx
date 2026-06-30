@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Scissors, Sparkles, Upload } from 'lucide-react';
 import { useAiStore } from '@/store/aitoolsStore';
+import { removeobj } from '@/services/aitools';
 
 export default function RemoveObj() {
   const [input, setInput] = useState<File | null>(null);
@@ -11,7 +12,7 @@ export default function RemoveObj() {
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('');
 
-  const { removeobj, buttonLoading } = useAiStore();
+  const { buttonLoading } = useAiStore();
 
   const onsubmitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
