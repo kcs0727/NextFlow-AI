@@ -30,8 +30,9 @@ export async function POST(req: NextRequest) {
       content = `## Article: ${prompt}\n\nThis is a preview mode placeholder content because the Gemini API Key is not configured yet. Set up the \`GEMINI_API_KEY\` variable to activate full functionality.\n\n### Benefits of AI Content\n1. Speed of creation\n2. Scale-up potential\n3. Idea brainstorming assistance`;
     }
     else {
+      const model=process.env.GEMINI_MODEL || 'gemini-2.5-flash';
       const response = await geminiAI.chat.completions.create({
-        model: 'gemini-3-flash-preview',
+        model: model,
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.7,
         max_tokens: maxTokens,

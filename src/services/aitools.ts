@@ -9,7 +9,7 @@ export async function getdashboarddata(
   setLoading: (l: boolean) => void
 ): Promise<void> {
   try {
-    const { data } = await axios.get('/api/user/get-user-creations');
+    const { data } = await axios.get('/api/ai/get-user-creations');
 
     if (data.success) {
       setCreations(data.creations);
@@ -235,7 +235,7 @@ export async function fetchcreations(
   setLoading: (l: boolean) => void
 ): Promise<void> {
   try {
-    const { data } = await axios.get('/api/user/get-published-creations');
+    const { data } = await axios.get('/api/ai/get-published-creations');
 
     if (data.success) {
       setCreations(data.creations);
@@ -273,19 +273,19 @@ export async function tooglelikes(
       )
     );
 
-    const { data } = await axios.post('/api/user/toogle-liked-creations', { id });
+    const { data } = await axios.post('/api/ai/toogle-liked-creations', { id });
 
     if (data.success) {
       toast.success(data.message);
     } else {
       toast.error(data.message);
       // Rollback / Refetch on error
-      const refetchResult = await axios.get('/api/user/get-published-creations');
+      const refetchResult = await axios.get('/api/ai/get-published-creations');
       if (refetchResult.data.success) setCreations(refetchResult.data.creations);
     }
   } catch (error: any) {
     toast.error(error.response?.data?.message || error.message);
-    const refetchResult = await axios.get('/api/user/get-published-creations');
+    const refetchResult = await axios.get('/api/ai/get-published-creations');
     if (refetchResult.data.success) setCreations(refetchResult.data.creations);
   }
 }

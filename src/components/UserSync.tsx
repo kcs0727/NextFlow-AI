@@ -6,13 +6,13 @@ import { useUserStore } from '@/store/userStore';
 
 export default function UserSync() {
   const { user, isLoaded } = useUser();
-  const { getuser } = useUserStore();
+  const getuser = useUserStore((state) => state.getuser);
 
   useEffect(() => {
     if (isLoaded && user) {
       getuser();
     }
-  }, [user, isLoaded]);
+  }, [user?.id, isLoaded]);
 
   return null;
 }

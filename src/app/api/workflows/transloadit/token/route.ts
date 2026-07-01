@@ -1,6 +1,6 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { Transloadit } from "transloadit";
+import { checkAuth } from "@/lib/server/auth-check";
 
 function getTemplateIdByMime(mimeType: string): string | undefined {
     if (mimeType.startsWith("image/")) {
@@ -26,11 +26,8 @@ function getTransloaditClient() {
 }
 
 export async function POST(request: Request) {
-    const { userId } = await auth();
-    if (!userId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+    const authCheck = await checkAuth();
+    if (authCheck.errorResponse) return authCheck.errorResponse;
     try {
         const body = (await request.json().catch(() => null)) as { mimeType?: string } | null;
         const mimeType = String(body?.mimeType ?? "");

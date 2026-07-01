@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     let message = '';
 
     if (currentLikes.includes(userId)) {
-      updatedLikes = currentLikes.filter((user) => user !== userId);
+      updatedLikes = currentLikes.filter((user:any) => user !== userId);
       message = 'Creation unliked';
     } else {
       updatedLikes = [...currentLikes, userId];

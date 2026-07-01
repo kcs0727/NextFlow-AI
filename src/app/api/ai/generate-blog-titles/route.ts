@@ -27,8 +27,9 @@ export async function POST(req: NextRequest) {
       content = `*   **Title Option 1**: Unleashing the Power of AI: A New Era\n*   **Title Option 2**: Why AI is the Key to Scaling Your Business\n*   **Title Option 3**: Step-by-Step Guide to Artificial Intelligence in 2026`;
     }
     else {
+      const model=process.env.GEMINI_MODEL || 'gemini-2.5-flash';
       const response = await geminiAI.chat.completions.create({
-        model: 'gemini-3-flash-preview',
+        model: model,
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.7,
         max_tokens: 1000,

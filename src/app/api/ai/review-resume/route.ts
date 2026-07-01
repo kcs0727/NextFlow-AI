@@ -54,8 +54,9 @@ export async function POST(req: NextRequest) {
 
       const prompt = `Review the following resume and provide constructive feedback on its strengths, weaknesses, and areas for improvement. Resume Content:\n\n${text}`;
 
+      const model=process.env.GEMINI_MODEL || 'gemini-2.5-flash';
       const response = await geminiAI.chat.completions.create({
-        model: 'gemini-3-flash-preview',
+        model: model,
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.7,
         max_tokens: 2000,

@@ -1,7 +1,9 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/server/db";
+import { checkAuth } from "@/lib/server/auth-check";
+import { redis } from "@/lib/server/redis";
+import { incrementFreeUsage } from "@/lib/server/rate-limit";
 
 const nodeRunSchema = z.object({
   nodeId: z.string(),
@@ -23,26 +25,34 @@ const runSchema = z.object({
 });
 
 export async function GET(request: Request) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const authCheck = await checkAuth();
+    if (authCheck.errorResponse) return authCheck.errorResponse;
+    const { userId } = authCheck;
 
-  const url = new URL(request.url);
-  const workflowId = url.searchParams.get("workflowId") ?? undefined;
+    const url = new URL(request.url);
+    const workflowId = url.searchParams.get("workflowId") ?? undefined;
 
-  const dbRuns = await prisma.workflowRun.findMany({
-    where: {
-      userId,
-      ...(workflowId ? { workflowId } : {}),
-    },
-    include: {
-      nodeRuns: true,
-    },
-    orderBy: { startedAt: "desc" },
-    take: 100,
-  });
+    const cacheKey = `runs:${userId}:${workflowId ?? 'all'}`;
+    const cachedData = await redis.get(cacheKey);
 
-  return NextResponse.json({
-    runs: dbRuns.map((run: {
+    if (cachedData) {
+      return NextResponse.json({ runs: cachedData });
+    }
+
+    const dbRuns = await prisma.workflowRun.findMany({
+      where: {
+        userId,
+        ...(workflowId ? { workflowId } : {}),
+      },
+      include: {
+        nodeRuns: true,
+      },
+      orderBy: { startedAt: "desc" },
+      take: 100,
+    });
+
+    const formattedRuns = dbRuns.map((run: {
       id: string;
       startedAt: Date;
       finishedAt: Date | null;
@@ -79,44 +89,72 @@ export async function GET(request: Request) {
         error: node.error ?? undefined,
         durationMs: node.durationMs ?? 0,
       })),
-    })),
-  });
+    }));
+
+    await redis.set(cacheKey, formattedRuns, { ex: 3600 });
+
+    return NextResponse.json({ runs: formattedRuns });
+  } catch (error: any) {
+    console.error("GET /api/workflows/runs error:", error);
+    return NextResponse.json({ error: error.message || "Server error" }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const authCheck = await checkAuth();
+    if (authCheck.errorResponse) return authCheck.errorResponse;
+    const { userId } = authCheck;
 
-  const parsed = runSchema.safeParse(await request.json());
-  if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid payload", issues: parsed.error.flatten() }, { status: 400 });
-  }
+    const parsed = runSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid payload", issues: parsed.error.flatten() }, { status: 400 });
+    }
 
-  const body = parsed.data;
+    const body = parsed.data;
 
-  const run = await prisma.workflowRun.create({
-    data: {
-      workflowId: body.workflowId,
-      userId,
-      scope: body.scope,
-      status: body.status,
-      durationMs: body.durationMs,
-      finishedAt: new Date(),
-      selectedIds: body.selectedIds ?? undefined,
-      nodeRuns: {
-        create: body.nodeRuns.map((node) => ({
-          nodeId: node.nodeId,
-          nodeType: node.nodeType,
-          status: node.status,
-          inputJson: node.inputs,
-          outputJson: node.outputs,
-          error: node.error,
-          durationMs: node.durationMs,
-        })),
+    const run = await prisma.workflowRun.create({
+      data: {
+        workflowId: body.workflowId,
+        userId,
+        scope: body.scope,
+        status: body.status,
+        durationMs: body.durationMs,
+        finishedAt: new Date(),
+        selectedIds: body.selectedIds ?? undefined,
+        nodeRuns: {
+          create: body.nodeRuns.map((node) => ({
+            nodeId: node.nodeId,
+            nodeType: node.nodeType,
+            status: node.status,
+            inputJson: node.inputs,
+            outputJson: node.outputs,
+            error: node.error,
+            durationMs: node.durationMs,
+          })),
+        },
       },
-    },
-    include: { nodeRuns: true },
-  });
+      include: { nodeRuns: true },
+    });
 
-  return NextResponse.json({ run });
+    // Invalidate runs cache for this workflow and the 'all' runs view
+    if (body.workflowId) {
+      await redis.del(`runs:${userId}:${body.workflowId}`);
+    }
+    await redis.del(`runs:${userId}:all`);
+
+    // Invalidate user workflows list because the runs count has incremented!
+    await redis.del(`workflows:${userId}`);
+
+    // Increment shared usage counter for the entire workflow run
+    let freeUsageCount = authCheck.freeUsageCount;
+    if (!authCheck.isPremium) {
+      freeUsageCount = await incrementFreeUsage(userId, authCheck.freeUsageCount);
+    }
+
+    return NextResponse.json({ run, freeUsageCount, isPremium: authCheck.isPremium });
+  } catch (error: any) {
+    console.error("POST /api/workflows/runs error:", error);
+    return NextResponse.json({ error: error.message || "Server error" }, { status: 500 });
+  }
 }

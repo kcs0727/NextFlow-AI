@@ -1,11 +1,11 @@
 "use client";
 
 import type { Edge } from "@xyflow/react";
-import axios from "@/lib/axios";
 import type { HistoryScope, HistoryStatus, NodeRunHistory, WorkflowEdge, WorkflowNode } from "@/types/workflow";
 import { useWorkflowStore } from "@/store/workflowStore";
 import { useUserStore } from "@/store/userStore";
 import { topologicalLayers } from "./graph";
+import { saveWorkflow, executeStartNode, pollTriggerRunStatus, saveWorkflowRun } from "@/services/workflow";
 
 type ExecuteStartResponse = {
   runId?: string;
@@ -55,51 +55,12 @@ function runStatusFromNodeRuns(nodeRuns: NodeRunHistory[]): HistoryStatus {
   return success ? "partial" : "failed";
 }
 
-async function waitForTriggerRun(runId: string) {
-  while (true) {
-    try {
-      const { data: body } = await axios.get<ExecuteStatusResponse & { error?: string }>(
-        `/api/workflows/execute`,
-        { params: { runId } }
-      );
-
-      if (!body.isCompleted) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        continue;
-      }
-
-      if (body.status === "COMPLETED" && body.isSuccess) {
-        return (body.output ?? {}) as Record<string, string>;
-      }
-
-      throw new Error(body.error?.message ?? `Trigger task failed with status ${body.status ?? "unknown"}`);
-    } catch (error: any) {
-      if (error.response?.data) {
-        const data = error.response.data;
-        const msg = data.error?.message ?? data.error ?? data.message ?? error.message;
-        throw new Error(msg);
-      }
-      throw error;
-    }
-  }
-}
 
 export async function executeScope(scope: HistoryScope) {
   const store = useWorkflowStore.getState();
 
   // Auto-save workflow before running
-  const { workflowId, workflowName, nodes: allNodes, edges: allEdges } = store;
-  if (workflowId && workflowName) {
-    try {
-      await axios.post("/api/workflows/save", {
-        id: workflowId,
-        name: workflowName,
-        graph: { nodes: allNodes, edges: allEdges },
-      });
-    } catch (error) {
-      console.error("Failed to auto-save workflow:", error);
-    }
-  }
+  await saveWorkflow();
 
   const runnable = store.getRunnableNodes(scope);
   if (!runnable.length) return;
@@ -117,38 +78,27 @@ export async function executeScope(scope: HistoryScope) {
     await Promise.all(
       layer.map(async (node) => {
         const start = performance.now();
-        useWorkflowStore.getState().setNodeStatus(node.id, "running");
+        store.setNodeStatus(node.id, "running");
 
-        const inputs = resolveInputs(node, useWorkflowStore.getState().nodes, useWorkflowStore.getState().edges);
+        const inputs = resolveInputs(node, store.nodes, store.edges);
 
         try {
-          const { data: body } = await axios.post<ExecuteStartResponse>(
-            "/api/workflows/execute",
-            { kind: node.data.kind, inputs }
-          );
-
-          // Sync usage state from the response
-          if (body.freeUsageCount !== undefined || body.isPremium !== undefined) {
-            useUserStore.setState({
-              freeUsageCount: body.freeUsageCount ?? useUserStore.getState().freeUsageCount,
-              isPremium: body.isPremium ?? useUserStore.getState().isPremium,
-            });
-          }
+          const body = await executeStartNode(node.data.kind, inputs);
 
           if (!body.runId) {
             throw new Error("Trigger run id was not returned");
           }
 
-          const outputs = await waitForTriggerRun(body.runId);
+          const outputs = await pollTriggerRunStatus(body.runId);
           for (const [key, val] of Object.entries(outputs)) {
-            useWorkflowStore.getState().setNodeOutput(node.id, key, val);
+            store.setNodeOutput(node.id, key, val);
           }
 
           if (node.data.kind === "runAnyLlm") {
-            useWorkflowStore.getState().setNodeInlineResult(node.id, outputs.output ?? "");
+            store.setNodeInlineResult(node.id, outputs.output ?? "");
           }
 
-          useWorkflowStore.getState().setNodeStatus(node.id, "success");
+          store.setNodeStatus(node.id, "success");
           nodeRuns.push({
             id: `${node.id}-${Date.now()}`,
             nodeId: node.id,
@@ -165,7 +115,7 @@ export async function executeScope(scope: HistoryScope) {
             error.response?.data?.message ??
             error.message ??
             "Unknown error";
-          useWorkflowStore.getState().setNodeStatus(node.id, "failed", message);
+          store.setNodeStatus(node.id, "failed", message);
           nodeRuns.push({
             id: `${node.id}-${Date.now()}`,
             nodeId: node.id,
@@ -194,18 +144,14 @@ export async function executeScope(scope: HistoryScope) {
     nodeRuns,
   };
 
-  useWorkflowStore.getState().addRunHistory(historyEntry);
+  store.addRunHistory(historyEntry);
 
-  try {
-    await axios.post("/api/workflows/runs", {
-      workflowId: useWorkflowStore.getState().workflowId,
-      scope,
-      status,
-      durationMs,
-      selectedIds: historyEntry.selectedIds,
-      nodeRuns,
-    });
-  } catch (err) {
-    console.error("Failed to save workflow run history:", err);
-  }
+  await saveWorkflowRun({
+    workflowId: store.workflowId,
+    scope,
+    status,
+    durationMs,
+    selectedIds: historyEntry.selectedIds,
+    nodeRuns,
+  });
 }

@@ -78,7 +78,7 @@ export default function Dashboard() {
           <div>
             <p className="text-xs font-semibold text-slate4 uppercase tracking-wider">API Usage Tier</p>
             <h2 className="text-2xl font-bold text-slate3 mt-1">
-              {isPremium ? '40 Requests / min' : '5 Requests / min'}
+              {isPremium ? '40 Requests / min' : '10 Requests / min'}
             </h2>
           </div>
           <div className="size-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex justify-center items-center">

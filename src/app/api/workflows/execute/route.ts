@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import type { WorkflowNodeKind } from "@/types/workflow";
 import { checkAuth, checkLimit } from "@/lib/server/auth-check";
-import { incrementFreeUsage } from "@/lib/server/rate-limit";
 import { runs, tasks } from "@trigger.dev/sdk/v3";
 
 const payloadSchema = z.object({
@@ -66,13 +65,7 @@ export async function POST(request: Request) {
     try {
         const handle = await tasks.trigger(TASK_IDS[kind], toExecutionPayload(inputs));
 
-        // Increment shared usage counter (same pool as AI tools)
-        let freeUsageCount = initialFreeCount;
-        if (!isPremium) {
-            freeUsageCount = await incrementFreeUsage(userId, initialFreeCount);
-        }
-
-        return NextResponse.json({ runId: handle.id, freeUsageCount, isPremium });
+        return NextResponse.json({ runId: handle.id});
     } catch (error) {
         const message = error instanceof Error ? error.message : "Trigger execution failed";
         return NextResponse.json({ error: message }, { status: 500 });

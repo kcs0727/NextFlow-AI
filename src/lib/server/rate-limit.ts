@@ -9,7 +9,7 @@ interface RateLimitResult {
 
 export async function checkRateLimit(userId: string, isPremium: boolean): Promise<RateLimitResult> {
   const key = `rate_limit:${userId}`;
-  const limit = isPremium ? 40 : 5; // 40 requests per min for Premium, 5 for Free
+  const limit = isPremium ? 40 : 10; // 40 requests per min for Premium, 5 for Free
   const windowSeconds = 60;
 
   const current = await redis.get(key);
