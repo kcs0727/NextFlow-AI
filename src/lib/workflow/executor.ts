@@ -3,7 +3,6 @@
 import type { Edge } from "@xyflow/react";
 import type { HistoryScope, HistoryStatus, NodeRunHistory, WorkflowEdge, WorkflowNode } from "@/types/workflow";
 import { useWorkflowStore } from "@/store/workflowStore";
-import { useUserStore } from "@/store/userStore";
 import { topologicalLayers } from "./graph";
 import { saveWorkflow, executeStartNode, pollTriggerRunStatus, saveWorkflowRun } from "@/services/workflow";
 

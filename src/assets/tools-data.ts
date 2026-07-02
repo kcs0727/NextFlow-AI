@@ -1,26 +1,18 @@
-import logo from './logo.png';
 import gradientBackground from './gradientBackground.png';
 import user_group from './user_group.png';
 import star_icon from './star_icon.svg';
 import star_dull_icon from './star_dull_icon.svg';
 import profile_img_1 from './profile_img_1.png';
 import arrow_icon from './arrow_icon.svg';
-import ai_gen_img_1 from './ai_gen_img_1.png';
-import ai_gen_img_2 from './ai_gen_img_2.png';
-import ai_gen_img_3 from './ai_gen_img_3.png';
 import { SquarePen, Hash, Image, Eraser, Scissors, FileText, Workflow, LucideIcon } from 'lucide-react';
 
 export const assets = {
-  logo,
   gradientBackground,
   user_group,
   star_icon,
   star_dull_icon,
   profile_img_1,
   arrow_icon,
-  ai_gen_img_1,
-  ai_gen_img_2,
-  ai_gen_img_3,
 };
 
 export interface AiTool {
@@ -125,8 +117,8 @@ export const faqData = [
     answer: 'The Free Tier allows you to experience all 6 AI tools (including Image Generation, Background/Object Removal, and Resume Review) with a shared total limit of 10 generations. Upgrade to Premium for unlimited access.',
   },
   {
-    question: 'How does generative object removal work?',
-    answer: 'Simply upload an image, type the name of a single object you wish to remove (like "mug" or "dog"), and our AI in conjunction with Cloudinary will organically fill in the background.',
+    question: 'How do I run an AI workflow in the Node Editor?',
+    answer: 'Navigate to the Node Editor, add your desired nodes (such as LLM generation, image tools, etc.), connect their inputs and outputs, and click the "Run" button in the toolbar. You can execute the entire workflow, run only a single node, or run all upstream nodes leading to your selection.',
   },
   {
     question: 'Can I cancel my premium subscription anytime?',

@@ -13,12 +13,6 @@ import {
   Sparkles,
   Star,
   ChevronDown,
-  Flame,
-  Heart,
-  Cpu,
-  Layers,
-  Zap,
-  ShieldAlert
 } from 'lucide-react';
 import { AiToolsData, dummyTestimonialData, faqData, assets } from '@/assets/tools-data';
 import { useTheme } from 'next-themes';
@@ -47,7 +41,7 @@ export default function Home() {
             </span>
           </Link>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 lg:gap-6">
 
             <button
               onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
@@ -58,10 +52,10 @@ export default function Home() {
             </button>
 
             {user ? (
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 lg:gap-4">
                 <Link
                   href="/ai"
-                  className="px-5 py-2 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-full shadow-md hover:shadow-lg transition"
+                  className="px-3 lg:px-5 py-2 text-xs lg:text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-full cursor-pointer shadow-md hover:shadow-lg transition"
                 >
                   Dashboard
                 </Link>
@@ -96,8 +90,16 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full dark:bg-blue-900/30 dark:border-blue-800/40 dark:text-blue-400 bg-blue-50 border-blue-200/50 text-blue-600 text-xs font-semibold uppercase tracking-wider mb-6">
-            <Sparkles className="w-3.5 h-3.5 text-blue-500 animate-pulse" /> Rebuilt with Next.js & Redis Caching
+          <div className="inline-flex flex-wrap items-center justify-center gap-3 mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full dark:bg-blue-900/30 dark:border-blue-800/40 dark:text-blue-400 bg-blue-50 border-blue-200/50 text-blue-600 text-xs font-semibold uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-blue-500 animate-pulse" />  New: Build & Run AI Workflows with Node Editor
+            </div>
+            <Link
+              href="/nodeeditor"
+              className="text-xs lg:text-sm inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-full shadow-lg shadow-blue-500/20 hover:shadow-indigo-500/30 hover:scale-[1.03] active:scale-[0.98] transition cursor-pointer"
+            >
+              Try Now <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-sans font-extrabold tracking-tight leading-[1.1] mb-6">
@@ -108,20 +110,20 @@ export default function Home() {
             </span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-slate4 max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
-            Transform your content workflow with our suite of premium AI tools. Write articles, synthesize images, remove objects, and audit resumes instantly.
+          <p className="text-sm sm:text-xl text-slate4 max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
+            Transform your content workflow with our suite of premium AI tools. Write articles, generate visuals, review resumes, and automate tasks with visual Node Editor.
           </p>
 
           <div className="flex flex-wrap justify-center gap-5 text-sm font-semibold mb-12">
             <button
               onClick={() => (user ? router.push('/ai') : openSignIn())}
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-indigo-500/30 hover:scale-[1.03] active:scale-[0.98] transition cursor-pointer"
+              className="px-4 lg:px-8 py-3 lg:py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-xl shadow-lg shadow-blue-500/20 hover:shadow-indigo-500/30 hover:scale-[1.03] active:scale-[0.98] transition cursor-pointer"
             >
               Start Creating Now
             </button>
             <a
               href="#showcase"
-              className="px-8 py-4 bg-secondary text-primary border border-slateb rounded-xl hover:scale-[1.03] active:scale-[0.98] transition"
+              className="px-4 lg:px-8 py-3 lg:py-4 bg-secondary text-primary border border-slateb rounded-xl hover:scale-[1.03] active:scale-[0.98] transition"
             >
               Explore Tools
             </a>

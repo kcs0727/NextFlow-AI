@@ -19,9 +19,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'EdgeAI - Reimagining Content with AI',
-  description: 'Unleash your content potential. Write articles, remove backgrounds, review resumes, and generate visuals instantly.',
-  keywords: ['AI Article Generator', 'Blog Title Generator', 'Object Removal AI', 'Resume Reviewer', 'Cloudinary transform', 'Gemini AI'],
+  title: 'NextflowAI',
+  description: 'Unleash your content potential. Write articles, remove backgrounds, review resumes, generate visuals instantly and run workflows on Node Editor.',
+  keywords: ['AI Article Generator', 'Blog Title Generator', 'Object Removal AI', 'Resume Reviewer', 'Cloudinary transform', 'Gemini AI','Node Editor', 'Workflows'],
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

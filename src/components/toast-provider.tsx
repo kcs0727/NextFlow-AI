@@ -13,20 +13,22 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         toastOptions={{
           duration: 3000,
           style: {
-            background: "#12131b",
-            color: "#e4e4e7",
+            background: "white",
+            color: "black",
             border: "1px solid rgba(255, 255, 255, 1)",
             backdropFilter: "blur(12px)",
           },
           success: {
             style: {
-              background: "rgba(16, 185, 129, 1)",
+              background: "white",
+              color:"green",
               borderColor: "rgba(16, 185, 129, 1)",
             },
           },
           error: {
             style: {
-              background: "rgba(244, 63, 94, 1)",
+              background: "white",
+              color: "red",
               borderColor: "rgba(244, 63, 94, 1)",
             },
             duration: 5000,
