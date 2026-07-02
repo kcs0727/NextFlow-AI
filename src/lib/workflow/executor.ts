@@ -78,9 +78,9 @@ export async function executeScope(scope: HistoryScope) {
     await Promise.all(
       layer.map(async (node) => {
         const start = performance.now();
-        store.setNodeStatus(node.id, "running");
+        useWorkflowStore.getState().setNodeStatus(node.id, "running");
 
-        const inputs = resolveInputs(node, store.nodes, store.edges);
+        const inputs = resolveInputs(node, useWorkflowStore.getState().nodes, useWorkflowStore.getState().edges);
 
         try {
           const body = await executeStartNode(node.data.kind, inputs);
@@ -91,14 +91,14 @@ export async function executeScope(scope: HistoryScope) {
 
           const outputs = await pollTriggerRunStatus(body.runId);
           for (const [key, val] of Object.entries(outputs)) {
-            store.setNodeOutput(node.id, key, val);
+            useWorkflowStore.getState().setNodeOutput(node.id, key, val);
           }
 
           if (node.data.kind === "runAnyLlm") {
-            store.setNodeInlineResult(node.id, outputs.output ?? "");
+            useWorkflowStore.getState().setNodeInlineResult(node.id, outputs.output ?? "");
           }
 
-          store.setNodeStatus(node.id, "success");
+          useWorkflowStore.getState().setNodeStatus(node.id, "success");
           nodeRuns.push({
             id: `${node.id}-${Date.now()}`,
             nodeId: node.id,
@@ -115,7 +115,7 @@ export async function executeScope(scope: HistoryScope) {
             error.response?.data?.message ??
             error.message ??
             "Unknown error";
-          store.setNodeStatus(node.id, "failed", message);
+          useWorkflowStore.getState().setNodeStatus(node.id, "failed", message);
           nodeRuns.push({
             id: `${node.id}-${Date.now()}`,
             nodeId: node.id,
@@ -140,14 +140,14 @@ export async function executeScope(scope: HistoryScope) {
     scope,
     status,
     durationMs,
-    selectedIds: scope !== "full" ? store.selectedNodeIds : undefined,
+    selectedIds: scope !== "full" ? useWorkflowStore.getState().selectedNodeIds : undefined,
     nodeRuns,
   };
 
-  store.addRunHistory(historyEntry);
+  useWorkflowStore.getState().addRunHistory(historyEntry);
 
   await saveWorkflowRun({
-    workflowId: store.workflowId,
+    workflowId: useWorkflowStore.getState().workflowId,
     scope,
     status,
     durationMs,

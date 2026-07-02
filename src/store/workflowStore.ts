@@ -292,37 +292,11 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
   },
 
   loadGraph: (nodes, edges, workflowId, workflowName) => {
-    // Ensure all edges are animated
-    const animatedEdges = (edges ?? []).map((edge) => ({
-      ...edge,
-      animated: true,
-    }));
-
-    // Compute connectedInputs for all nodes
-    const connectedInputsByNode = new Map<string, Record<string, boolean>>();
-    for (const edge of animatedEdges) {
-      if (!edge.targetHandle) continue;
-      const val = connectedInputsByNode.get(edge.target) ?? {};
-      val[edge.targetHandle] = true;
-      connectedInputsByNode.set(edge.target, val);
-    }
-
-    const updatedNodes = (nodes ?? []).map((node) => {
-      const connected = connectedInputsByNode.get(node.id) ?? {};
-      return {
-        ...node,
-        data: {
-          ...node.data,
-          connectedInputs: connected,
-        },
-      };
-    });
-
     set({
       workflowId,
       workflowName: workflowName ?? "Untitled Workflow",
-      nodes: updatedNodes,
-      edges: animatedEdges,
+      nodes,
+      edges,
       undoStack: [],
       redoStack: [],
     });

@@ -17,7 +17,7 @@ export function createSampleWorkflow() {
   const nodes: WorkflowNode[] = [
     {
       id: uploadImageId,
-      position: { x: 80, y: 80 },
+      position: { x: 0, y: 0 },
       type: "uploadImage",
       data: {
         title: "Upload Image Node",
@@ -30,7 +30,7 @@ export function createSampleWorkflow() {
     },
     {
       id: uploadVideoId,
-      position: { x: 80, y: 260 },
+      position: { x: 0, y: 400 },
       type: "uploadVideo",
       data: {
         title: "Upload Video Node",
@@ -43,7 +43,7 @@ export function createSampleWorkflow() {
     },
     {
       id: cropImageId,
-      position: { x: 340, y: 80 },
+      position: { x: 400, y: 0 },
       type: "cropImage",
       data: {
         title: "Crop Image Node",
@@ -56,26 +56,26 @@ export function createSampleWorkflow() {
           height_percent: "80",
         },
         outputs: {},
-        connectedInputs: {},
+        connectedInputs: {"image_url":true},
         status: "idle",
       },
     },
     {
       id: extractFrameId,
-      position: { x: 340, y: 260 },
+      position: { x: 400, y: 400 },
       type: "extractFrameFromVideo",
       data: {
         title: "Extract Frame from Video Node",
         kind: "extractFrameFromVideo",
         values: { video_url: "", timestamp: "50%" },
         outputs: {},
-        connectedInputs: {},
+        connectedInputs: {"video_url":true},
         status: "idle",
       },
     },
     {
       id: textSystemPrompt1Id,
-      position: { x: 600, y: 40 },
+      position: { x: 800, y: 0 },
       type: "text",
       data: {
         title: "Text Node - System Prompt",
@@ -90,7 +90,7 @@ export function createSampleWorkflow() {
     },
     {
       id: textProductDetailsId,
-      position: { x: 600, y: 180 },
+      position: { x: 800, y: 300 },
       type: "text",
       data: {
         title: "Text Node - Product Details",
@@ -105,7 +105,7 @@ export function createSampleWorkflow() {
     },
     {
       id: textSystemPrompt3Id,
-      position: { x: 600, y: 320 },
+      position: { x: 800, y: 600 },
       type: "text",
       data: {
         title: "Text Node - Social Media Prompt",
@@ -120,42 +120,42 @@ export function createSampleWorkflow() {
     },
     {
       id: llmNode1Id,
-      position: { x: 860, y: 180 },
+      position: { x: 1200, y: 0 },
       type: "runAnyLlm",
       data: {
         title: "LLM Node #1 - Product Description",
         kind: "runAnyLlm",
         values: { model: "gemini-2.5-flash", system_prompt: "", user_message: "" },
         outputs: {},
-        connectedInputs: {},
+        connectedInputs: {"system_prompt":true, "user_message":true, "images":true},
         status: "idle",
       },
     },
     {
       id: llmNode2Id,
-      position: { x: 1120, y: 180 },
+      position: { x: 1200, y: 400 },
       type: "runAnyLlm",
       data: {
         title: "LLM Node #2 - Marketing Summary",
         kind: "runAnyLlm",
         values: { model: "gemini-2.5-flash", system_prompt: "", user_message: "" },
         outputs: {},
-        connectedInputs: {},
+        connectedInputs: {"system_prompt":true, "user_message":true,"images":true},
         status: "idle",
       },
     },
   ];
 
   const edges: Edge[] = [
-    { id: `edge-${nanoid(8)}`, source: uploadImageId, target: cropImageId, sourceHandle: null, targetHandle: "image_url" },
-    { id: `edge-${nanoid(8)}`, source: textSystemPrompt1Id, target: llmNode1Id, sourceHandle: null, targetHandle: "system_prompt" },
-    { id: `edge-${nanoid(8)}`, source: textProductDetailsId, target: llmNode1Id, sourceHandle: null, targetHandle: "user_message" },
-    { id: `edge-${nanoid(8)}`, source: cropImageId, target: llmNode1Id, sourceHandle: null, targetHandle: "images" },
-    { id: `edge-${nanoid(8)}`, source: uploadVideoId, target: extractFrameId, sourceHandle: null, targetHandle: "video_url" },
-    { id: `edge-${nanoid(8)}`, source: textSystemPrompt3Id, target: llmNode2Id, sourceHandle: null, targetHandle: "system_prompt" },
-    { id: `edge-${nanoid(8)}`, source: llmNode1Id, target: llmNode2Id, sourceHandle: null, targetHandle: "user_message" },
-    { id: `edge-${nanoid(8)}`, source: cropImageId, target: llmNode2Id, sourceHandle: null, targetHandle: "images" },
-    { id: `edge-${nanoid(8)}`, source: extractFrameId, target: llmNode2Id, sourceHandle: null, targetHandle: "images" },
+    { id: `edge-${nanoid(8)}`, source: uploadImageId, target: cropImageId, sourceHandle: null, targetHandle: "image_url",animated: true, },
+    { id: `edge-${nanoid(8)}`, source: textSystemPrompt1Id, target: llmNode1Id, sourceHandle: null, targetHandle: "system_prompt",animated: true, },
+    { id: `edge-${nanoid(8)}`, source: textProductDetailsId, target: llmNode1Id, sourceHandle: null, targetHandle: "user_message",animated: true, },
+    { id: `edge-${nanoid(8)}`, source: cropImageId, target: llmNode1Id, sourceHandle: null, targetHandle: "images",animated: true, },
+    { id: `edge-${nanoid(8)}`, source: uploadVideoId, target: extractFrameId, sourceHandle: null, targetHandle: "video_url",animated: true, },
+    { id: `edge-${nanoid(8)}`, source: textSystemPrompt3Id, target: llmNode2Id, sourceHandle: null, targetHandle: "system_prompt",animated: true, },
+    { id: `edge-${nanoid(8)}`, source: llmNode1Id, target: llmNode2Id, sourceHandle: null, targetHandle: "user_message",animated: true, },
+    { id: `edge-${nanoid(8)}`, source: cropImageId, target: llmNode2Id, sourceHandle: null, targetHandle: "images",animated: true, },
+    { id: `edge-${nanoid(8)}`, source: extractFrameId, target: llmNode2Id, sourceHandle: null, targetHandle: "images",animated: true, },
   ];
 
   return { nodes, edges };

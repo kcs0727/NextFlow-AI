@@ -82,5 +82,6 @@ export default redis;
 
 // rate_limit:${userId} 60
 // user_cache:${userId} 24 hours
-// community_feed 600
-// dashboard:${userId} 600
+// community_feed 3600
+// dashboard:${userId} 3600
+// workflow:${userId} 3600

@@ -71,11 +71,8 @@ export async function POST(request: Request) {
           data: { name, graphJson: graph, userId },
         });
 
-    // Invalidate workflows list cache and individual workflow cache
+    // Invalidate workflows list cache
     await redis.del(`workflows:${userId}`);
-    if (id) {
-      await redis.del(`workflow:${id}`);
-    }
 
     return NextResponse.json({ workflow });
   } catch (error: any) {

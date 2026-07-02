@@ -19,16 +19,6 @@ export async function GET(_: Request, { params }: RouteContext) {
     const { userId } = authCheck;
 
     const { workflowId } = await params;
-    const cacheKey = `workflow:${workflowId}`;
-    const cachedData = await redis.get(cacheKey);
-
-    if (cachedData) {
-      const workflow = cachedData as any;
-      if (workflow.userId === userId) {
-        return NextResponse.json({ workflow });
-      }
-    }
-
     const workflow = await prisma.workflow.findFirst({
       where: { id: workflowId, userId },
     });
@@ -36,8 +26,6 @@ export async function GET(_: Request, { params }: RouteContext) {
     if (!workflow) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-
-    await redis.set(cacheKey, workflow, { ex: 3600 });
 
     return NextResponse.json({ workflow });
   } catch (error: any) {
@@ -68,8 +56,7 @@ export async function PATCH(request: Request, { params }: RouteContext) {
       data: { name: parsed.data.name },
     });
 
-    // Invalidate single workflow cache and list cache
-    await redis.del(`workflow:${workflowId}`);
+    // Invalidate workflows list cache
     await redis.del(`workflows:${userId}`);
 
     return NextResponse.json({ workflow: updated });
@@ -93,8 +80,7 @@ export async function DELETE(_: Request, { params }: RouteContext) {
 
     await prisma.workflow.delete({ where: { id: workflowId } });
 
-    // Invalidate single workflow cache and list cache
-    await redis.del(`workflow:${workflowId}`);
+    // Invalidate workflows list cache
     await redis.del(`workflows:${userId}`);
 
     return NextResponse.json({ ok: true });

@@ -33,13 +33,6 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const workflowId = url.searchParams.get("workflowId") ?? undefined;
 
-    const cacheKey = `runs:${userId}:${workflowId ?? 'all'}`;
-    const cachedData = await redis.get(cacheKey);
-
-    if (cachedData) {
-      return NextResponse.json({ runs: cachedData });
-    }
-
     const dbRuns = await prisma.workflowRun.findMany({
       where: {
         userId,
@@ -91,8 +84,6 @@ export async function GET(request: Request) {
       })),
     }));
 
-    await redis.set(cacheKey, formattedRuns, { ex: 3600 });
-
     return NextResponse.json({ runs: formattedRuns });
   } catch (error: any) {
     console.error("GET /api/workflows/runs error:", error);
@@ -136,12 +127,6 @@ export async function POST(request: Request) {
       },
       include: { nodeRuns: true },
     });
-
-    // Invalidate runs cache for this workflow and the 'all' runs view
-    if (body.workflowId) {
-      await redis.del(`runs:${userId}:${body.workflowId}`);
-    }
-    await redis.del(`runs:${userId}:all`);
 
     // Invalidate user workflows list because the runs count has incremented!
     await redis.del(`workflows:${userId}`);
